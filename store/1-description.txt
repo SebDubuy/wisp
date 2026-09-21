@@ -1,0 +1,20 @@
+Tu as trop d’onglets ouverts. Le problème n'est pas ta mémoire vive : Chrome décharge déjà les onglets inactifs tout seul. Le problème, c'est que tu ne retrouves rien et que tu n'oses rien fermer.
+
+Wisp s'occupe de ça.
+
+Il regroupe, tout seul
+Trois pages du même site forment un groupe. Deux recherches sur un même sujet aussi : « week-end lisbonne » puis « que faire à lisbonne » se rejoignent sous Lisbonne, parce que Wisp retient le mot qu’elles ont en commun.
+
+Il prévient avant d'endormir
+À mi-parcours, un sablier apparaît sur le groupe dans ta barre d'onglets. Tu vois le sommeil arriver, et le marqueur disparaît si tu y retournes. Rien ne s'évapore par surprise.
+
+Il libère la mémoire, et l'attention
+Endormir un groupe rend la RAM. L'archiver rend l'attention : le groupe entier quitte ta barre d'onglets et revient d'un clic, avec son nom et sa couleur.
+
+Il apprend tes sujets, sans rien envoyer
+Ouvre Amazon, eBay et Vinted en même temps : ils se rangent sous « Achats ». Pour le reste, Wisp observe simplement quels sites reviennent ensemble et te propose de les lier. Tu nommes, tu valides, ou tu refuses.
+
+Ce que Wisp ne fait pas
+Il ne lit pas le contenu de tes pages. Il n'injecte aucun script. Il ne contacte aucun serveur, pas même le mien. Il n'y a pas de compte à créer, et l'extension fonctionne hors ligne.
+
+Gratuit, sans publicité, sans traceur.

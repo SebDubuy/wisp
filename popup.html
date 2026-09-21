@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* Une classe qui déclare display: bat la règle par défaut de [hidden].
+           Sans ce garde-fou, masquer un élément par son attribut ne fait rien. */
+        [hidden] { display: none !important; }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 360px;
+            background-color: #0f172a;
+            font-family: sans-serif;
+            overflow-x: hidden;
+        }
+
+        .container {
+            padding: 20px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #f8fafc;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .header img {
+            width: 35px;
+            height: 35px;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin: 0;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .stats-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stats-card {
+            flex: 1;
+            background: rgba(56, 189, 248, 0.1);
+            border-radius: 12px;
+            padding: 10px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            text-align: center;
+        }
+
+        .stats-card span {
+            display: block;
+            font-size: 20px;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+
+        .stats-card label {
+            font-size: 9px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .field {
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin: 0 0 4px;
+        }
+
+        .section-note {
+            font-size: 10px;
+            color: #64748b;
+            margin: 0 0 10px;
+            line-height: 1.4;
+        }
+
+        .groups {
+            margin-bottom: 20px;
+        }
+
+        .group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 6px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex: none;
+        }
+
+        .group-body {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .group-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: #e2e8f0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .group-state {
+            font-size: 10px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .group-state.sleeping { color: #38bdf8; }
+        .group-state.waiting  { color: #fbbf24; }
+        .group-state.active   { color: #4ade80; }
+        .group-state.safe     { color: #64748b; }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: none;
+        }
+
+        .actions button {
+            width: 68px;
+            margin: 0;
+            padding: 5px 0;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 6px;
+            background: rgba(56, 189, 248, 0.12);
+            color: #7dd3fc;
+        }
+
+        .actions button:hover {
+            background: rgba(56, 189, 248, 0.25);
+            transform: none;
+        }
+
+        .actions button.ghost {
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+        }
+
+        .actions button.ghost:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .suggestion {
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(250, 204, 21, 0.07);
+            border: 1px solid rgba(250, 204, 21, 0.22);
+            margin-bottom: 14px;
+        }
+
+        .suggestion p {
+            margin: 0 0 10px;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #e2e8f0;
+        }
+
+        .suggestion strong { color: #fbbf24; }
+
+        .suggestion input {
+            font-size: 12px;
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+
+        .suggestion-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .suggestion-actions button {
+            margin: 0;
+            padding: 8px;
+            font-size: 11px;
+            border-radius: 8px;
+        }
+
+        .suggestion-actions button:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+        }
+
+        .suggestion-actions button:disabled:hover {
+            background: #38bdf8;
+            transform: none;
+        }
+
+        .suggestion-actions button.ghost {
+            background: rgba(255, 255, 255, 0.06);
+            color: #94a3b8;
+            flex: 0 0 38%;
+        }
+
+        .suggestion-actions button.ghost:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: none;
+        }
+
+        #sweepBtn {
+            padding: 10px;
+            font-size: 12px;
+            margin: 0 0 8px;
+            background: rgba(56, 189, 248, 0.14);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+        }
+
+        #sweepBtn:hover {
+            background: rgba(56, 189, 248, 0.25);
+            transform: none;
+        }
+
+        #focusBtn {
+            padding: 10px;
+            font-size: 12px;
+            margin: 0 0 14px;
+            background: rgba(56, 189, 248, 0.14);
+            color: #7dd3fc;
+            border: 1px solid rgba(56, 189, 248, 0.25);
+        }
+
+        #focusBtn:hover {
+            background: rgba(56, 189, 248, 0.25);
+            transform: none;
+        }
+
+        #archiveSearch {
+            font-size: 12px;
+            padding: 8px 10px;
+            margin-bottom: 10px;
+        }
+
+        .locked {
+            padding: 12px;
+            border-radius: 12px;
+            background: rgba(250, 204, 21, 0.07);
+            border: 1px solid rgba(250, 204, 21, 0.22);
+            margin-bottom: 14px;
+            font-size: 11px;
+            line-height: 1.55;
+            color: #e2e8f0;
+        }
+
+        .locked strong { color: #fbbf24; }
+
+        .pro-badge {
+            display: inline-block;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: .05em;
+            text-transform: uppercase;
+            color: #0f172a;
+            background: #fbbf24;
+            padding: 2px 6px;
+            border-radius: 999px;
+            margin-left: 6px;
+        }
+
+        .archive {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed rgba(255, 255, 255, 0.08);
+            margin-bottom: 6px;
+        }
+
+        .empty {
+            font-size: 11px;
+            color: #64748b;
+            line-height: 1.5;
+            padding: 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        details.settings summary {
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 700;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 14px;
+            list-style: none;
+        }
+
+        details.settings summary::-webkit-details-marker { display: none; }
+        details.settings summary::before { content: "▸ "; }
+        details.settings[open] summary::before { content: "▾ "; }
+
+        /* Les placeholders doivent se lire comme des exemples, jamais comme
+           des valeurs enregistrées. */
+        ::placeholder {
+            color: #475569;
+            font-style: italic;
+            opacity: 1;
+        }
+
+        label.title {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        label.hint {
+            display: block;
+            font-size: 10px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.2);
+            color: #fff;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: none;
+            font-size: 12px;
+            font-family: monospace;
+        }
+
+        #whitelist { height: 50px; }
+        #linkedDomains { height: 60px; }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #38bdf8;
+            color: #0f172a;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: 0.2s;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background: #7dd3fc;
+            transform: translateY(-1px);
+        }
+
+        .footer {
+            font-size: 9px;
+            color: #475569;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="icon128.png">
+            <h2>Wisp</h2>
+        </div>
+
+        <div class="stats-row">
+            <div class="stats-card">
+                <span id="ghostCount">0</span>
+                <label>Onglets endormis</label>
+            </div>
+            <div class="stats-card">
+                <span id="archiveCount">0</span>
+                <label>Groupes archivés</label>
+            </div>
+        </div>
+
+        <div class="suggestion" id="suggestion" hidden></div>
+
+        <button id="sweepBtn">Ranger les onglets ouverts</button>
+        <button id="focusBtn" hidden>🎯 Mode focus — endormir tout le reste</button>
+
+        <div class="groups">
+            <p class="section-title">Tes groupes maintenant</p>
+            <p class="section-note" id="rule"></p>
+            <div id="groupList"></div>
+        </div>
+
+        <div class="locked" id="lockNote" hidden></div>
+
+        <div class="groups" id="archiveSection" hidden>
+            <p class="section-title">Archives <span id="proBadge" class="pro-badge" hidden>Pro</span></p>
+            <p class="section-note" id="archiveNote">Fermés, mais gardés au chaud. Restaurables en un clic.</p>
+            <input type="text" id="archiveSearch" placeholder="Chercher un sujet, un titre, une adresse…" hidden>
+            <div id="archiveList"></div>
+        </div>
+
+        <details class="settings">
+            <summary>Réglages</summary>
+
+            <div class="field">
+                <label class="title">Nb d'onglets identiques avant regroupement auto</label>
+                <input type="number" id="minTabsToGroup" min="2">
+            </div>
+
+            <div class="field">
+                <label class="title">Attente (⏳) / Sommeil (💤) en minutes</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="number" id="waitMin" min="1">
+                    <input type="number" id="ghostMin" min="1">
+                </div>
+                <label class="hint">⏳ prévient dans la barre d'onglets, 💤 endort pour de bon</label>
+            </div>
+
+            <div class="field">
+                <label class="title">Domaines liés (même sujet)</label>
+                <textarea id="linkedDomains" placeholder="ex : cardmarket.com = Pokémon TCG&#10;ex : vinted.fr = Pokémon TCG"></textarea>
+                <label class="hint">Un par ligne : domaine = nom du sujet</label>
+            </div>
+
+            <div class="field">
+                <label class="title">Whitelist (jamais mis en veille)</label>
+                <textarea id="whitelist" placeholder="ex : youtube.com&#10;ex : notion.so"></textarea>
+            </div>
+
+            <button id="saveBtn">Enregistrer</button>
+
+            <div class="field" id="proField" hidden style="margin-top: 22px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px;">
+                <label class="title">Wisp Pro — clé de licence</label>
+                <input type="text" id="licenceKey" placeholder="WISP-…">
+                <label class="hint" id="licenceState">Achat unique. La clé est vérifiée sur ta machine, sans aucun appel réseau.</label>
+                <button id="licenceBtn" style="margin-top: 8px;">Activer</button>
+            </div>
+        </details>
+        <div class="footer">Wisp — léger, discret, jamais perdu ⚡</div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1 @@
+Wisp regroupe automatiquement les onglets ouverts par sujet, en s'appuyant sur leur domaine et sur la recherche dont ils sont issus, puis met en veille les groupes restés inactifs afin de libérer de la mémoire.

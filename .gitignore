@@ -1,0 +1,11 @@
+# La clé privée signe les licences : la publier permettrait d'en fabriquer.
+tools/licence-privee.json
+
+# Le site vit à part (Netlify) : ce dépôt ne versionne que l'extension.
+site/
+
+# Paquets fabriqués par `npm run package`, et fichiers système.
+dist/
+*.zip
+.DS_Store
+node_modules/

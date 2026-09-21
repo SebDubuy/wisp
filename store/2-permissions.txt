@@ -1,0 +1,9 @@
+tabs — Wisp lit l'adresse et le titre des onglets ouverts pour déterminer leur sujet et décider dans quel groupe les ranger. Il ne lit jamais le contenu des pages : l'extension ne demande pas `<all_urls>` et n'injecte aucun script.
+
+tabGroups — Créer les groupes, les nommer d'après le sujet détecté, les replier et les déplier. C'est la fonction principale de l'extension.
+
+storage — Enregistrer les réglages, les sujets liés et les groupes archivés dans le stockage local du navigateur, sur la machine de l'utilisateur. Aucune donnée n'est transmise.
+
+alarms — Vérifier une fois par minute quels groupes n'ont plus d'activité récente, afin de les marquer puis de les endormir.
+
+contextMenus — Ajouter une entrée « Wisp : regrouper les onglets sélectionnés » au menu du clic droit, pour les cas que la détection automatique ne couvre pas.
