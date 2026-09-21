@@ -203,9 +203,9 @@ test("une recherche contenant « trier » ne rejoint pas « À trier »", () => 
     assert.equal(w.groupFitsQuery({ title: "📥 À trier" }, w.keywordsOf("trier ses déchets")), false);
 });
 
-test("en anglais, le groupe s'appelle « To sort »", async () => {
+test("en anglais, le groupe s'appelle « Inbox »", async () => {
     const nav = fauxNavigateur([{ id: 1, onglets: [web(1, "https://notion.so/x")] }]);
     const w = chargerWisp({ langue: "en", chrome: nav.chrome });
     await w.sortLooseTabs(1);
-    assert.deepEqual(nav.titres(), ["📥 To sort"]);
+    assert.deepEqual(nav.titres(), ["📥 Inbox"]);
 });
