@@ -349,9 +349,16 @@ async function render() {
     // Le mode focus n'a de sens qu'avec plusieurs groupes à départager.
     await renderSuggestion();
 
+    // Le bouton annonce ce qu'il va faire : « Trier les 7 onglets en vrac ».
+    // Sans rien en vrac, il se grise au lieu de promettre un travail inexistant.
+    // Même définition que isLoose() dans background.js.
+    const enVrac = allTabs.filter(tab => tab.windowId === win.id && tab.groupId === -1 &&
+        !tab.pinned && /^https?:/.test(tab.url || "")).length;
     const sweepBtn = document.getElementById('sweepBtn');
-    sweepBtn.disabled = false;
-    sweepBtn.textContent = t("sweepButton");
+    sweepBtn.disabled = enVrac === 0;
+    sweepBtn.textContent = enVrac === 0
+        ? t("sortButtonNone")
+        : t(enVrac === 1 ? "sortButtonOne" : "sortButtonMany", [String(enVrac)]);
 
     const focusBtn = document.getElementById('focusBtn');
     focusBtn.hidden = groups.filter(g => g.windowId === win.id).length < 2;
@@ -442,19 +449,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
-    // Le bouton annonce son résultat : sans cela, « rien à ranger » et
-    // « rangement en panne » avaient exactement la même tête.
+    // Le bouton annonce son résultat : « ✅ 3 onglets rangés · 7 dans « À trier » ».
+    // Puis, 2,5 s plus tard, un rendu neuf lui rend son libellé (et son compte).
     document.getElementById('sweepBtn').addEventListener('click', async (e) => {
         const btn = e.target;
         btn.disabled = true;
-        btn.textContent = t("sweepRunning");
-        const reponse = await chrome.runtime.sendMessage({ type: "sweepNow" });
+        btn.textContent = t("sortRunning");
+        const win = await chrome.windows.getCurrent();
+        const r = await chrome.runtime.sendMessage({ type: "sortLoose", windowId: win.id }) || {};
         await render();
-        const n = reponse && Number.isFinite(reponse.ranges) ? reponse.ranges : 0;
-        btn.textContent = n === 0
-            ? t("sweepNothing")
-            : t(n === 1 ? "sweepDoneOne" : "sweepDoneMany", [String(n)]);
-        setTimeout(() => { btn.textContent = t("sweepButton"); }, 2500);
+        const parts = [];
+        if (r.ranges) parts.push(t(r.ranges === 1 ? "sortResultGroupedOne" : "sortResultGroupedMany", [String(r.ranges)]));
+        if (r.aTrier) parts.push(t("sortResultInbox", [String(r.aTrier)]));
+        btn.disabled = true;
+        btn.textContent = parts.length ? `✅ ${parts.join(" · ")}` : t("sortResultNothing");
+        setTimeout(render, 2500);
     });
 
     document.getElementById('focusBtn').addEventListener('click', async (e) => {

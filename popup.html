@@ -240,6 +240,14 @@
             transform: none;
         }
 
+        /* Rien en vrac : le bouton le dit, sans réclamer de clic. */
+        #sweepBtn:disabled {
+            opacity: .45;
+            cursor: default;
+        }
+
+        #sweepBtn:disabled:hover { background: rgba(56, 189, 248, 0.14); }
+
         #focusBtn {
             padding: 10px;
             font-size: 12px;
@@ -413,7 +421,7 @@
 
         <div class="suggestion" id="suggestion" hidden></div>
 
-        <button id="sweepBtn" data-i18n="sweepButton"></button>
+        <button id="sweepBtn" data-i18n="sortButton"></button>
         <button id="focusBtn" data-i18n="focusButton" hidden></button>
 
         <div class="groups">

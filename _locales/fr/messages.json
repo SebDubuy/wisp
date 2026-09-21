@@ -50,30 +50,55 @@
   "statArchivedGroups": {
     "message": "Groupes archivés"
   },
-  "sweepButton": {
-    "message": "Ranger les onglets ouverts"
+  "inboxTitle": {
+    "message": "📥 À trier"
   },
-  "sweepRunning": {
-    "message": "Rangement…"
+  "sortButton": {
+    "message": "Trier les onglets en vrac"
   },
-  "sweepDoneOne": {
-    "message": "✅ $P1$ onglet rangé",
+  "sortButtonOne": {
+    "message": "Trier l'onglet en vrac"
+  },
+  "sortButtonMany": {
+    "message": "Trier les $P1$ onglets en vrac",
     "placeholders": {
       "p1": {
         "content": "$1"
       }
     }
   },
-  "sweepDoneMany": {
-    "message": "✅ $P1$ onglets rangés",
+  "sortButtonNone": {
+    "message": "Aucun onglet en vrac"
+  },
+  "sortRunning": {
+    "message": "Tri en cours…"
+  },
+  "sortResultGroupedOne": {
+    "message": "$P1$ onglet rangé",
     "placeholders": {
       "p1": {
         "content": "$1"
       }
     }
   },
-  "sweepNothing": {
-    "message": "Rien à ranger : tout est déjà à sa place"
+  "sortResultGroupedMany": {
+    "message": "$P1$ onglets rangés",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "sortResultInbox": {
+    "message": "$P1$ dans « À trier »",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "sortResultNothing": {
+    "message": "Rien à trier"
   },
   "focusButton": {
     "message": "🎯 Mode focus — endormir tout le reste"

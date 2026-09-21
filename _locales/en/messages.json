@@ -50,30 +50,55 @@
   "statArchivedGroups": {
     "message": "Archived groups"
   },
-  "sweepButton": {
-    "message": "Tidy open tabs"
+  "inboxTitle": {
+    "message": "📥 To sort"
   },
-  "sweepRunning": {
-    "message": "Tidying…"
+  "sortButton": {
+    "message": "Sort loose tabs"
   },
-  "sweepDoneOne": {
-    "message": "✅ $P1$ tab tidied",
+  "sortButtonOne": {
+    "message": "Sort the loose tab"
+  },
+  "sortButtonMany": {
+    "message": "Sort the $P1$ loose tabs",
     "placeholders": {
       "p1": {
         "content": "$1"
       }
     }
   },
-  "sweepDoneMany": {
-    "message": "✅ $P1$ tabs tidied",
+  "sortButtonNone": {
+    "message": "No loose tabs"
+  },
+  "sortRunning": {
+    "message": "Sorting…"
+  },
+  "sortResultGroupedOne": {
+    "message": "$P1$ tab grouped",
     "placeholders": {
       "p1": {
         "content": "$1"
       }
     }
   },
-  "sweepNothing": {
-    "message": "Nothing to tidy: everything's already in place"
+  "sortResultGroupedMany": {
+    "message": "$P1$ tabs grouped",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "sortResultInbox": {
+    "message": "$P1$ in “To sort”",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "sortResultNothing": {
+    "message": "Nothing to sort"
   },
   "focusButton": {
     "message": "🎯 Focus mode — put everything else to sleep"

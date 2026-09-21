@@ -324,7 +324,7 @@ function planSearchGroup(query, siblings) {
 // porteurs, pour qu'une nouvelle recherche « hôtel lisbonne » rejoigne « Lisbonne ».
 function groupFitsQuery(group, myKeywords) {
     const title = topicOfGroup(group);
-    if (!title) return false;
+    if (!title || isInbox(group)) return false;
     const titleWords = keywordsOf(title);
     if (!titleWords.length) return false;
     return titleWords.every(t => myKeywords.some(k => sameWord(k, t)));
@@ -350,6 +350,35 @@ function topicOfGroup(group) {
     if (title.startsWith(SLEEP_PREFIX)) return title.slice(SLEEP_PREFIX.length);
     if (title.startsWith(WAIT_PREFIX)) return title.slice(WAIT_PREFIX.length);
     return title;
+}
+
+// « 📥 À trier » : là où le tri dépose les onglets sans sujet. Ce n'est PAS un
+// sujet : Wisp traite ses onglets comme libres et les en sort dès qu'ils
+// trouvent un groupe. Sans cette exception, un onglet déposé là n'était plus
+// jamais réexaminé, et le groupe devenait un fourre-tout définitif.
+function isInbox(group) {
+    return topicOfGroup(group) === t("inboxTitle");
+}
+
+async function inboxOf(windowId) {
+    try {
+        const inbox = (await chrome.tabGroups.query({ windowId })).find(isInbox);
+        return inbox ? inbox.id : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+// Libre : dans aucun groupe, ou en attente dans « À trier ».
+function isFree(tab, inboxId) {
+    const groupId = tab.groupId ?? -1;
+    return groupId === -1 || (inboxId != null && groupId === inboxId);
+}
+
+// En vrac : une page web hors de tout groupe, non épinglée. Les pages du
+// navigateur (nouvel onglet, réglages) n'encombrent personne : on les laisse.
+function isLoose(tab) {
+    return (tab.groupId ?? -1) === -1 && !tab.pinned && /^https?:/.test(tab.url || "");
 }
 
 // Choisit une couleur encore libre dans la fenêtre, pour que deux groupes
@@ -452,12 +481,13 @@ async function wakeTabIfSleeping(tabId) {
 
 async function maybeAutoGroup(tab) {
     if (!tab.url || tab.pinned || isWhitelisted(tab.url)) return;
-    if (tab.groupId && tab.groupId !== -1) return; // déjà dans un groupe
+    const inboxId = await inboxOf(tab.windowId);
+    if (!isFree(tab, inboxId)) return; // déjà rangé dans un vrai groupe
 
     // Une session de recherche prime sur le domaine : trois articles ouverts
     // depuis "énergies renouvelables" forment un sujet, alors qu'ils n'ont
     // aucun domaine en commun et ne se regrouperaient jamais autrement.
-    if (await groupBySearchSession(tab)) return;
+    if (await groupBySearchSession(tab, inboxId)) return;
 
     const topic = getTopic(tab.url);
     if (!topic) return;
@@ -477,7 +507,7 @@ async function maybeAutoGroup(tab) {
     const win = await chrome.windows.get(tab.windowId, { populate: true });
     const sameTopicTabs = win.tabs.filter(t =>
         t.id !== tab.id &&
-        t.groupId === -1 &&
+        isFree(t, inboxId) &&
         !t.pinned &&
         t.url &&
         getTopic(t.url) === topic
@@ -495,7 +525,7 @@ async function maybeAutoGroup(tab) {
 
     // Dernier recours : le métier connu. Vinted, Amazon, AliExpress et Cdiscount
     // n'ont aucun domaine commun, mais relèvent tous d'« Achats ».
-    await groupByCategory(tab);
+    await groupByCategory(tab, inboxId);
 }
 
 // Regroupe par catégorie du lexique. Contrairement à la suggestion du popup,
@@ -509,7 +539,7 @@ function categoryOfUrl(url) {
     return categoryOf(id.key);
 }
 
-async function groupByCategory(tab) {
+async function groupByCategory(tab, inboxId = null) {
     const category = categoryOfUrl(tab.url);
     if (!category) return false;
 
@@ -523,7 +553,7 @@ async function groupByCategory(tab) {
 
     const win = await chrome.windows.get(tab.windowId, { populate: true });
     const mates = (win.tabs || []).filter(t =>
-        t.id !== tab.id && t.groupId === -1 && !t.pinned &&
+        t.id !== tab.id && isFree(t, inboxId) && !t.pinned &&
         categoryOfUrl(t.url) === category
     );
 
@@ -536,14 +566,14 @@ async function groupByCategory(tab) {
     return true;
 }
 
-async function groupBySearchSession(tab) {
+async function groupBySearchSession(tab, inboxId = null) {
     const own = await chrome.storage.session.get(`q_${tab.id}`);
     const query = own[`q_${tab.id}`];
     if (!query) return false;
 
     const win = await chrome.windows.get(tab.windowId, { populate: true });
     const loose = (win.tabs || []).filter(t =>
-        t.id !== tab.id && t.groupId === -1 && !t.pinned && t.url
+        t.id !== tab.id && isFree(t, inboxId) && !t.pinned && t.url
     );
     const keys = loose.map(t => `q_${t.id}`);
     const stamps = keys.length ? await chrome.storage.session.get(keys) : {};
@@ -600,27 +630,63 @@ async function sweepExistingTabs() {
     } catch (e) {
         return 0;
     }
-    // Relevé des onglets libres AVANT de grouper : un onglet peut être rangé
-    // par le passage d'un autre, il doit pourtant compter.
-    const libres = wins.flatMap(w => (w.tabs || []).filter(t => t.groupId === -1).map(t => t.id));
+    // Relevé des onglets libres AVANT de grouper — y compris ceux qui attendent
+    // dans « À trier » : un onglet peut être rangé par le passage d'un autre, il
+    // doit pourtant compter.
+    const libres = [];
+    for (const w of wins) {
+        const inboxId = await inboxOf(w.id);
+        for (const t of w.tabs || []) if (isFree(t, inboxId)) libres.push(t.id);
+    }
 
     for (const id of libres) {
         try {
             // L'instantané vieillit à mesure qu'on groupe : on relit l'onglet.
+            // maybeAutoGroup() écarte lui-même ceux qui ont trouvé un groupe.
             const tab = await chrome.tabs.get(id).catch(() => null);
-            if (!tab || (tab.groupId && tab.groupId !== -1)) continue;
-            await maybeAutoGroup(tab);
+            if (tab) await maybeAutoGroup(tab);
         } catch (e) {
             console.warn("Wisp : onglet non rangé", id, e && e.message);
         }
     }
 
+    // Rangé = arrivé dans un vrai groupe. Rester dans « À trier » ne compte pas.
     let ranges = 0;
     for (const id of libres) {
         const tab = await chrome.tabs.get(id).catch(() => null);
-        if (tab && tab.groupId !== -1) ranges++;
+        if (tab && !isFree(tab, await inboxOf(tab.windowId))) ranges++;
     }
     return ranges;
+}
+
+// « Trier les onglets en vrac » : regroupe ce qui peut l'être, puis dépose le
+// reste de CETTE fenêtre dans « À trier ». Les autres fenêtres gardent leurs
+// onglets : on trie celle qu'on a sous les yeux. Rend { ranges, aTrier }.
+async function sortLooseTabs(windowId) {
+    const ranges = await sweepExistingTabs();
+    let win;
+    try {
+        win = await chrome.windows.get(windowId, { populate: true });
+    } catch (e) {
+        return { ranges, aTrier: 0 };
+    }
+    const enVrac = (win.tabs || []).filter(isLoose).map(t => t.id);
+    if (!enVrac.length) return { ranges, aTrier: 0 };
+
+    try {
+        const inboxId = await inboxOf(windowId);
+        if (inboxId != null) {
+            await chrome.tabs.group({ groupId: inboxId, tabIds: enVrac });
+            await wakeGroup(inboxId); // il reçoit des onglets vivants
+        } else {
+            const groupId = await chrome.tabs.group({ tabIds: enVrac });
+            // Gris : la seule couleur que pickColor() ne donne jamais à un sujet.
+            await chrome.tabGroups.update(groupId, { title: t("inboxTitle"), color: "grey" });
+        }
+    } catch (e) {
+        return { ranges, aTrier: 0 };
+    }
+    return { ranges, aTrier: enVrac.length };
 }
 
 // ----------------------- Patrouille : sommeil au niveau du GROUPE -----------------------
@@ -1209,10 +1275,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         return true;
     }
 
-    if (msg.type === "sweepNow") {
-        sweepExistingTabs().then((ranges) => {
+    if (msg.type === "sortLoose") {
+        sortLooseTabs(msg.windowId).then((r) => {
             updateBadge();
-            sendResponse({ ok: true, ranges });
+            sendResponse({ ok: true, ...r });
         });
         return true;
     }
