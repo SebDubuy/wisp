@@ -152,11 +152,13 @@ function topicIdentity(url) {
     const host = parsed.hostname.replace(/^www\./, "");
     if (!host) return null;
     const base = getBaseDomain(host);
+    // Les services passent AVANT l'exclusion : google.com figure dans
+    // NEVER_GROUP, et le tester d'abord rendait mail.google.com et
+    // gemini.google.com muets — SERVICE_HOSTS n'était jamais atteint.
+    if (SERVICE_HOSTS[host]) return { host, base, key: host, label: SERVICE_HOSTS[host] };
     if (NEVER_GROUP.has(host) || NEVER_GROUP.has(base)) return null;
 
-    return SERVICE_HOSTS[host]
-        ? { host, base, key: host, label: SERVICE_HOSTS[host] }
-        : { host, base, key: base, label: prettyTopic(base) };
+    return { host, base, key: base, label: prettyTopic(base) };
 }
 
 function labelForKey(key) {
