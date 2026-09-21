@@ -36,7 +36,12 @@ const SERVICE_HOSTS = {
     "meet.google.com": "Google Meet",
     "photos.google.com": "Google Photos",
     "gemini.google.com": "Gemini",
-    "chat.google.com": "Google Chat"
+    "chat.google.com": "Google Chat",
+    "ads.google.com": "Google Ads",
+    "analytics.google.com": "Google Analytics",
+    "search.google.com": "Google Search Console",
+    "console.cloud.google.com": "Google Cloud",
+    "keep.google.com": "Google Keep"
 };
 
 // Moteurs de recherche et portails : une recherche n'est PAS un sujet EN SOI.
@@ -581,19 +586,41 @@ async function groupBySearchSession(tab) {
 // Wisp ne réagissait qu'au CHARGEMENT d'un onglet. Les onglets déjà ouverts au
 // moment où l'extension démarre n'étaient donc jamais examinés : on pouvait
 // avoir quatre sites d'achat sous les yeux sans qu'aucun groupe n'apparaisse.
+// Rend le nombre d'onglets rangés, pour que le popup puisse le dire : un
+// bouton qui ne répond rien semble cassé, même quand il n'y avait rien à faire.
+//
+// Chaque onglet est traité isolément. Un try/catch englobant abandonnait tout
+// le balayage à la première erreur, en silence. Et seules les fenêtres
+// normales sont parcourues : Chrome refuse de grouper un onglet d'une fenêtre
+// d'application (PWA) ou de popup, et c'était justement l'erreur typique.
 async function sweepExistingTabs() {
+    let wins;
     try {
-        const wins = await chrome.windows.getAll({ populate: true });
-        for (const win of wins) {
-            for (const stale of win.tabs || []) {
-                // L'instantané vieillit à mesure qu'on groupe : on relit l'onglet.
-                const tab = await chrome.tabs.get(stale.id).catch(() => null);
-                if (!tab) continue;
-                if (tab.groupId && tab.groupId !== -1) continue;
-                await maybeAutoGroup(tab);
-            }
+        wins = await chrome.windows.getAll({ populate: true, windowTypes: ["normal"] });
+    } catch (e) {
+        return 0;
+    }
+    // Relevé des onglets libres AVANT de grouper : un onglet peut être rangé
+    // par le passage d'un autre, il doit pourtant compter.
+    const libres = wins.flatMap(w => (w.tabs || []).filter(t => t.groupId === -1).map(t => t.id));
+
+    for (const id of libres) {
+        try {
+            // L'instantané vieillit à mesure qu'on groupe : on relit l'onglet.
+            const tab = await chrome.tabs.get(id).catch(() => null);
+            if (!tab || (tab.groupId && tab.groupId !== -1)) continue;
+            await maybeAutoGroup(tab);
+        } catch (e) {
+            console.warn("Wisp : onglet non rangé", id, e && e.message);
         }
-    } catch (e) { /* silencieux */ }
+    }
+
+    let ranges = 0;
+    for (const id of libres) {
+        const tab = await chrome.tabs.get(id).catch(() => null);
+        if (tab && tab.groupId !== -1) ranges++;
+    }
+    return ranges;
 }
 
 // ----------------------- Patrouille : sommeil au niveau du GROUPE -----------------------
@@ -693,6 +720,15 @@ const CATEGORY_HINTS = {
     "vercel.com": "dev", "netlify.com": "dev", "replit.com": "dev",
     "mozilla.org": "dev", "caniuse.com": "dev", "docker.com": "dev",
     "nodejs.org": "dev", "python.org": "dev", "rust-lang.org": "dev",
+
+    // Les services Google se rangent ensemble ; chacun garde son propre groupe
+    // dès qu'il atteint seul le seuil (trois onglets Gmail donnent « Gmail »).
+    // Gemini reste en « ai », avec ChatGPT et Claude : c'est là qu'on le cherche.
+    "mail.google.com": "google", "drive.google.com": "google", "docs.google.com": "google",
+    "sheets.google.com": "google", "calendar.google.com": "google", "meet.google.com": "google",
+    "photos.google.com": "google", "chat.google.com": "google", "ads.google.com": "google",
+    "analytics.google.com": "google", "search.google.com": "google",
+    "console.cloud.google.com": "google", "keep.google.com": "google",
 
     "chatgpt.com": "ai", "claude.ai": "ai", "gemini.google.com": "ai",
     "openai.com": "ai", "anthropic.com": "ai", "huggingface.co": "ai",
@@ -1174,9 +1210,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     }
 
     if (msg.type === "sweepNow") {
-        sweepExistingTabs().then(() => {
+        sweepExistingTabs().then((ranges) => {
             updateBadge();
-            sendResponse({ ok: true });
+            sendResponse({ ok: true, ranges });
         });
         return true;
     }

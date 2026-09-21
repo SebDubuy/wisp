@@ -41,8 +41,11 @@ function fauxI18n(langue) {
 // Un `chrome` qui accepte n'importe quel appel. Chaque maillon est une
 // fonction : chrome.tabs.onUpdated.addListener(...) comme
 // chrome.storage.local.get({...}) passent sans erreur.
-function fauxChrome(langue) {
+// `surcharges` remplace des API précises par un comportement de test :
+// { tabs: { get: (id) => … } } fait répondre chrome.tabs.get par cette fonction.
+function fauxChrome(langue, surcharges = {}) {
     const i18n = fauxI18n(langue);
+    const trouver = (chemin) => chemin.slice(1).reduce((o, cle) => (o == null ? undefined : o[cle]), surcharges);
     const noeud = (chemin) => new Proxy(function () {}, {
         get(_, prop) {
             if (prop === "then") return undefined; // jamais « thenable »
@@ -50,6 +53,8 @@ function fauxChrome(langue) {
             return noeud([...chemin, String(prop)]);
         },
         apply(_, __, args) {
+            const remplacant = trouver(chemin);
+            if (typeof remplacant === "function") return remplacant(...args);
             const dernier = chemin[chemin.length - 1];
             if (dernier === "addListener") return undefined;
             if (dernier === "get" && chemin.includes("storage")) {
@@ -67,9 +72,9 @@ function fauxChrome(langue) {
     return noeud(["chrome"]);
 }
 
-export function chargerWisp({ langue = "fr" } = {}) {
+export function chargerWisp({ langue = "fr", chrome = {} } = {}) {
     const contexte = vm.createContext({
-        chrome: fauxChrome(langue),
+        chrome: fauxChrome(langue, chrome),
         console, URL, URLSearchParams, TextEncoder, TextDecoder,
         crypto: webcrypto, atob, btoa, structuredClone,
         setTimeout, clearTimeout

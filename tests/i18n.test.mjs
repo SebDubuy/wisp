@@ -19,7 +19,7 @@ function clesUtilisees() {
     for (const m of lire("popup.html").matchAll(/data-i18n(?:-[a-z]+)?="([A-Za-z0-9_]+)"/g)) cles.add(m[1]);
     for (const m of lire("manifest.json").matchAll(/__MSG_([A-Za-z0-9_]+)__/g)) cles.add(m[1]);
     // Les catégories sont demandées par préfixe + identifiant.
-    for (const id of ["design", "dev", "ai", "news", "video", "shopping", "travel", "work"]) {
+    for (const id of ["design", "dev", "ai", "news", "video", "shopping", "travel", "work", "google"]) {
         cles.add(`category_${id}`);
     }
     return cles;

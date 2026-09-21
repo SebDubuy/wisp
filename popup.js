@@ -229,7 +229,7 @@ function listOf(items) {
 async function renderSuggestion() {
     const box = document.getElementById('suggestion');
     const suggestion = await chrome.runtime.sendMessage({ type: "getSuggestion" });
-    box.textContent = '';
+    box.textContent = ''; // après la réponse : la boîte ne se vide pas en attendant
 
     if (!suggestion) {
         box.hidden = true;
@@ -278,9 +278,11 @@ async function renderSuggestion() {
     box.append(text, input, actions);
 }
 
+// Le rendu construit tout hors de la page, puis remplace d'un coup. Vider la
+// liste d'abord, puis attendre les réponses de Chrome avant de la remplir,
+// laissait le popup rétrécir et regrandir : il « sursautait » à chaque clic.
 async function render() {
     const list = document.getElementById('groupList');
-    list.textContent = '';
 
     const [groups, allTabs] = await Promise.all([
         chrome.tabGroups.query({}),
@@ -310,7 +312,6 @@ async function render() {
     const archiveSection = document.getElementById('archiveSection');
     const archiveNode = document.getElementById('archiveList');
     const champ = document.getElementById('archiveSearch');
-    archiveNode.textContent = '';
     archiveSection.hidden = archiveList.length === 0;
     document.getElementById('proBadge').hidden = !(PRO.monetisation && PRO.pro);
 
@@ -318,9 +319,7 @@ async function render() {
     champ.hidden = archiveList.length < 4;
 
     const visibles = archiveList.filter(e => archiveMatches(e, FILTRE));
-    for (const entry of visibles) {
-        archiveNode.append(renderArchive(entry, win.id));
-    }
+    archiveNode.replaceChildren(...visibles.map(entry => renderArchive(entry, win.id)));
 
     const note = document.getElementById('archiveNote');
     if (FILTRE) {
@@ -365,16 +364,18 @@ async function render() {
         const empty = document.createElement('div');
         empty.className = 'empty';
         empty.textContent = t("emptyGroups", [String(SETTINGS.minTabsToGroup), t("contextMenuGroup")]);
-        list.append(empty);
+        list.replaceChildren(empty);
         return;
     }
 
     const now = Date.now();
     const stamps = await chrome.storage.session.get(allTabs.map(t => `t_${t.id}`));
+    const rows = [];
     for (const group of groups) {
         const info = await describeGroup(group, allTabs, stamps, now);
-        list.append(renderGroup(group, info));
+        rows.push(renderGroup(group, info));
     }
+    list.replaceChildren(...rows);
 }
 
 // ----------------------- Réglages -----------------------
@@ -441,11 +442,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // Le bouton annonce son résultat : sans cela, « rien à ranger » et
+    // « rangement en panne » avaient exactement la même tête.
     document.getElementById('sweepBtn').addEventListener('click', async (e) => {
-        e.target.disabled = true;
-        e.target.textContent = t("sweepRunning");
-        await chrome.runtime.sendMessage({ type: "sweepNow" });
+        const btn = e.target;
+        btn.disabled = true;
+        btn.textContent = t("sweepRunning");
+        const reponse = await chrome.runtime.sendMessage({ type: "sweepNow" });
         await render();
+        const n = reponse && Number.isFinite(reponse.ranges) ? reponse.ranges : 0;
+        btn.textContent = n === 0
+            ? t("sweepNothing")
+            : t(n === 1 ? "sweepDoneOne" : "sweepDoneMany", [String(n)]);
+        setTimeout(() => { btn.textContent = t("sweepButton"); }, 2500);
     });
 
     document.getElementById('focusBtn').addEventListener('click', async (e) => {

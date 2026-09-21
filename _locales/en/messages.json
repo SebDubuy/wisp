@@ -41,6 +41,9 @@
   "category_work": {
     "message": "Work"
   },
+  "category_google": {
+    "message": "Google"
+  },
   "statSleepingTabs": {
     "message": "Sleeping tabs"
   },
@@ -52,6 +55,25 @@
   },
   "sweepRunning": {
     "message": "Tidying…"
+  },
+  "sweepDoneOne": {
+    "message": "✅ $P1$ tab tidied",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "sweepDoneMany": {
+    "message": "✅ $P1$ tabs tidied",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "sweepNothing": {
+    "message": "Nothing to tidy: everything's already in place"
   },
   "focusButton": {
     "message": "🎯 Focus mode — put everything else to sleep"

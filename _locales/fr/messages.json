@@ -41,6 +41,9 @@
   "category_work": {
     "message": "Travail"
   },
+  "category_google": {
+    "message": "Google"
+  },
   "statSleepingTabs": {
     "message": "Onglets endormis"
   },
@@ -52,6 +55,25 @@
   },
   "sweepRunning": {
     "message": "Rangement…"
+  },
+  "sweepDoneOne": {
+    "message": "✅ $P1$ onglet rangé",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "sweepDoneMany": {
+    "message": "✅ $P1$ onglets rangés",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "sweepNothing": {
+    "message": "Rien à ranger : tout est déjà à sa place"
   },
   "focusButton": {
     "message": "🎯 Mode focus — endormir tout le reste"
