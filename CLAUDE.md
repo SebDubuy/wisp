@@ -19,6 +19,22 @@ Pas d'étape de build — HTML/CSS/JS vanilla chargé tel quel dans Chrome.
 
 **Pour déboguer le service worker :** sur `chrome://extensions`, clique sur le lien "service worker" sous Wisp.
 
+### Tests automatisés — méthode TDD
+
+`npm test` lance les tests (lanceur intégré à Node, aucune dépendance). `tests/charger.mjs` exécute le **vrai** `background.js` dans un contexte `vm` avec un faux `chrome` qui accepte tout appel : les fonctions pures (`getTopic`, `planSearchGroup`, `keywordsOf`…) se testent telles qu'elles partent dans l'extension, sans copie ni module. Les `let` de premier niveau (`LINKED_DOMAINS`…) se modifient via `w.evaluer("...")`. Les objets rendus par le contexte vm ont un autre `Array.prototype` : les repasser par `JSON` avant un `deepEqual`.
+
+Toute modification suit le cycle **rouge → vert** :
+1. Écrire d'abord le test qui décrit le comportement voulu, et le voir **échouer**
+2. Écrire le code minimal qui le fait passer
+3. `npm test` entièrement vert avant tout commit
+
+Un bug corrigé commence par un test qui le reproduit. Exemple fondateur : `getTopic()` rendait `null` pour Gmail et Gemini, parce que `NEVER_GROUP` (qui contient `google.com`) était testé avant `SERVICE_HOSTS`. Le test « les services Google sont des sujets distincts » l'a révélé.
+
+### Livraison
+
+- **Commit + push sur GitHub après chaque changement validé** (tests verts). Le dépôt ne versionne que l'extension : `site/` est exclu par `.gitignore`, tout comme `tools/licence-privee.json`, qui ne doit **jamais** être publiée.
+- `npm run package` fabrique `dist/wisp-<version>.zip` pour le Chrome Web Store, **seulement si tous les tests passent**. Le zip contient une liste explicite de 8 fichiers (voir `tools/empaqueter.mjs`) ; il refuse une version déjà empaquetée — monter `version` dans `manifest.json` avant chaque envoi au Store.
+- GitHub Actions (`.github/workflows/tests.yml`) relance les tests à chaque push.
 
 ## Architecture
 

@@ -1,0 +1,9 @@
+{
+  "name": "wisp",
+  "private": true,
+  "description": "Extension Chrome : regroupe les onglets par sujet et endort les groupes inactifs.",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "package": "npm test && node tools/empaqueter.mjs"
+  }
+}
