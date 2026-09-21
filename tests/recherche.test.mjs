@@ -62,3 +62,21 @@ test("une nouvelle recherche rejoint le groupe dont elle contient le titre", () 
     assert.ok(!w.groupFitsQuery({ title: "Porto" }, mots));
     assert.ok(!w.groupFitsQuery({ title: "" }, mots), "un groupe sans titre est ignoré");
 });
+
+// Les recherches se tapent dans n'importe quelle langue, quelle que soit
+// celle du navigateur : les mots creux anglais doivent disparaître aussi.
+test("les mots creux anglais disparaissent", () => {
+    assert.deepEqual(nu(w.keywordsOf("how to find the best cheap hotel")), ["hotel"]);
+    assert.deepEqual(nu(w.keywordsOf("what is the best laptop review")), ["laptop"]);
+});
+
+test("deux recherches anglaises sans vrai sujet commun ne fusionnent pas", () => {
+    assert.equal(w.planSearchGroup("what is react", [onglet(1, "what is vue")]), null);
+    assert.equal(w.planSearchGroup("best laptop 2026", [onglet(1, "best running shoes")]), null);
+    assert.equal(w.planSearchGroup("how to cook rice", [onglet(1, "how to fix a bike")]), null);
+});
+
+test("deux recherches anglaises sur un même sujet fusionnent", () => {
+    assert.equal(w.planSearchGroup("lisbon weekend", [onglet(1, "what to do in lisbon")]).topic, "Lisbon");
+    assert.equal(w.planSearchGroup("best garage near me", [onglet(1, "cheap mechanic garage")]).topic, "Garage");
+});

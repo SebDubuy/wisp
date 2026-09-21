@@ -229,7 +229,20 @@ const QUERY_STOPWORDS = new Set([
     "comparatif", "comparaison", "comparer", "test", "tests", "avis",
     "prix", "tarif", "tarifs", "gratuit", "promo", "solde", "soldes",
     "trouver", "cherche", "chercher", "acheter", "louer", "faire", "fait",
-    "guide", "top", "liste", "idee", "idees", "exemple", "exemples"
+    "guide", "top", "liste", "idee", "idees", "exemple", "exemples",
+    // Anglais : une recherche se tape dans n'importe quelle langue, quelle que
+    // soit celle du navigateur. Sans eux, « what is react » et « what is vue »
+    // fusionnaient sous « What », « best laptop » et « best shoes » sous « Best ».
+    "what", "which", "who", "whom", "whose", "when", "where", "why", "how",
+    "are", "was", "were", "been", "being", "does", "did", "can", "could",
+    "should", "would", "will", "you", "your", "his", "her", "its", "our",
+    "their", "they", "them", "she", "him", "this", "that", "these", "those",
+    "not", "yes", "very", "too", "more", "most", "less", "much", "many",
+    "some", "any", "all", "from", "into", "about", "near", "over", "under",
+    "between", "without", "best", "better", "good", "cheap", "cheapest",
+    "free", "review", "reviews", "versus", "compare", "comparison", "price",
+    "prices", "deal", "deals", "sale", "buy", "find", "get", "make", "list",
+    "idea", "ideas", "example", "examples", "tutorial", "online"
 ]);
 
 function normalizeWord(word) {
