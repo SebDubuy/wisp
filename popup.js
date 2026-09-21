@@ -14,6 +14,31 @@ let FILTRE = "";
 
 let SETTINGS = { waitMin: 30, ghostMin: 60, minTabsToGroup: 3, whitelist: "", linkedDomains: {} };
 
+// Texte dans la langue du navigateur. Repli sur la clé : un oubli se voit.
+function t(key, substitutions) {
+    return chrome.i18n.getMessage(key, substitutions) || key;
+}
+
+// « 1 onglet », « 4 onglets » : les deux langues accordent au singulier.
+function tabsCount(n) {
+    return t(n === 1 ? "tabsCountOne" : "tabsCountMany", [String(n)]);
+}
+
+// Remplit le HTML : chaque élément porte sa clé dans data-i18n, et ses
+// attributs dans data-i18n-placeholder / -title / -aria-label.
+function applyI18n() {
+    document.documentElement.lang = chrome.i18n.getUILanguage();
+    for (const el of document.querySelectorAll("[data-i18n]")) {
+        el.textContent = t(el.dataset.i18n);
+    }
+    for (const attr of ["placeholder", "title", "aria-label"]) {
+        const cle = `i18n${attr.replace(/(^|-)(\w)/g, (_, __, c) => c.toUpperCase())}`;
+        for (const el of document.querySelectorAll(`[data-i18n-${attr}]`)) {
+            el.setAttribute(attr, t(el.dataset[cle]));
+        }
+    }
+}
+
 function topicOf(title) {
     const t = title || "";
     if (t.startsWith(SLEEP_PREFIX)) return t.slice(SLEEP_PREFIX.length);
@@ -31,11 +56,13 @@ function whitelistEntries() {
 }
 
 function formatDelay(min) {
-    if (min < 1) return "moins d'une minute";
-    if (min < 60) return `${Math.round(min)} min`;
+    if (min < 1) return t("delayLessThanMinute");
+    if (min < 60) return t("delayMinutes", [String(Math.round(min))]);
     const h = Math.floor(min / 60);
     const rest = Math.round(min % 60);
-    return rest ? `${h} h ${rest} min` : `${h} h`;
+    return rest
+        ? t("delayHoursMinutes", [String(h), String(rest)])
+        : t("delayHours", [String(h)]);
 }
 
 // ----------------------- Lecture de l'état réel -----------------------
@@ -45,21 +72,21 @@ async function describeGroup(group, allTabs, stamps, now) {
     const wl = whitelistEntries();
 
     if (group.title && group.title.startsWith(SLEEP_PREFIX)) {
-        return { state: "sleeping", label: `Endormi · ${tabs.length} onglets`, action: "wake" };
+        return { state: "sleeping", label: t("stateSleeping", [tabsCount(tabs.length)]), action: "wake" };
     }
     if (!group.title) {
-        return { state: "safe", label: "Sans titre — Wisp l'ignore", action: null };
+        return { state: "safe", label: t("stateUntitled"), action: null };
     }
     if (tabs.some(t => t.active)) {
-        return { state: "active", label: `Ouvert sous tes yeux · ${tabs.length} onglets`, action: "sleep" };
+        return { state: "active", label: t("stateActive", [tabsCount(tabs.length)]), action: "sleep" };
     }
     if (tabs.some(t => wl.some(site => (t.url || "").toLowerCase().includes(site)))) {
-        return { state: "safe", label: "Protégé par ta whitelist", action: null };
+        return { state: "safe", label: t("stateWhitelisted"), action: null };
     }
 
     const lastActivity = Math.max(...tabs.map(t => stamps[`t_${t.id}`] || 0), 0);
     if (lastActivity === 0) {
-        return { state: "safe", label: "Pas encore mesuré (clique un onglet)", action: "sleep" };
+        return { state: "safe", label: t("stateUnmeasured"), action: "sleep" };
     }
 
     const idleMin = (now - lastActivity) / 60000;
@@ -67,11 +94,11 @@ async function describeGroup(group, allTabs, stamps, now) {
     const waiting = group.title.startsWith(WAIT_PREFIX);
 
     if (remaining <= 0) {
-        return { state: "waiting", label: "S'endort au prochain passage", action: "sleep" };
+        return { state: "waiting", label: t("stateSleepsNext"), action: "sleep" };
     }
     return {
         state: waiting ? "waiting" : "",
-        label: `${waiting ? "⏳ " : ""}Dort dans ${formatDelay(remaining)}`,
+        label: `${waiting ? WAIT_PREFIX : ""}${t("stateSleepsIn", [formatDelay(remaining)])}`,
         action: "sleep"
     };
 }
@@ -89,7 +116,7 @@ function renderGroup(group, info) {
 
     const name = document.createElement('div');
     name.className = 'group-name';
-    name.textContent = topicOf(group.title) || "Groupe sans nom";
+    name.textContent = topicOf(group.title) || t("unnamedGroup");
 
     const state = document.createElement('div');
     state.className = `group-state ${info.state}`;
@@ -103,20 +130,20 @@ function renderGroup(group, info) {
 
     if (info.action) {
         actions.append(actionButton(
-            info.action === "wake" ? "Réveiller" : "Dormir",
+            t(info.action === "wake" ? "actionWake" : "actionSleep"),
             { type: info.action === "wake" ? "wakeNow" : "sleepNow", groupId: group.id }
         ));
     }
     if (group.title) {
         const archive = document.createElement('button');
         archive.className = 'ghost';
-        archive.textContent = "Archiver";
-        archive.title = "Ferme le groupe en le gardant restaurable";
+        archive.textContent = t("actionArchive");
+        archive.title = t("actionArchiveTitle");
         archive.addEventListener('click', async () => {
             archive.disabled = true;
             const r = await chrome.runtime.sendMessage({ type: "archiveGroup", groupId: group.id });
             if (r && r.raison === "plafond") {
-                archive.textContent = "Plafond atteint";
+                archive.textContent = t("archiveLimitReached");
                 archive.disabled = false;
             }
             await render();
@@ -142,7 +169,7 @@ function actionButton(label, message) {
 }
 
 function formatDate(ts) {
-    return new Date(ts).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    return new Date(ts).toLocaleDateString(chrome.i18n.getUILanguage(), { day: 'numeric', month: 'short' });
 }
 
 // Une archive correspond si son sujet, ou n'importe lequel de ses onglets,
@@ -175,16 +202,16 @@ function renderArchive(entry, windowId) {
 
     const state = document.createElement('div');
     state.className = 'group-state';
-    state.textContent = `${entry.tabs.length} onglets · archivé le ${formatDate(entry.savedAt)}`;
+    state.textContent = t("archiveMeta", [tabsCount(entry.tabs.length), formatDate(entry.savedAt)]);
 
     body.append(name, state);
 
     const actions = document.createElement('div');
     actions.className = 'actions';
-    actions.append(actionButton("Restaurer", {
+    actions.append(actionButton(t("actionRestore"), {
         type: "restoreArchive", archiveId: entry.id, windowId
     }));
-    const del = actionButton("Oublier", { type: "deleteArchive", archiveId: entry.id });
+    const del = actionButton(t("actionForget"), { type: "deleteArchive", archiveId: entry.id });
     del.className = 'ghost';
     actions.append(del);
 
@@ -193,9 +220,10 @@ function renderArchive(entry, windowId) {
 }
 
 // Wisp propose, il n'impose pas : le nom du sujet reste éditable avant de lier.
-function frenchList(items) {
+// « A, B et C » / « A, B and C ».
+function listOf(items) {
     if (items.length <= 1) return items[0] || "";
-    return `${items.slice(0, -1).join(", ")} et ${items[items.length - 1]}`;
+    return t("listLast", [items.slice(0, -1).join(", "), items[items.length - 1]]);
 }
 
 async function renderSuggestion() {
@@ -211,22 +239,20 @@ async function renderSuggestion() {
 
     const text = document.createElement('p');
     const who = document.createElement('strong');
-    who.textContent = frenchList(suggestion.labels);
-    text.append("💡 ", who, suggestion.name
-        ? " reviennent souvent ensemble. Les ranger sous un même sujet ?"
-        : " reviennent souvent ensemble. Sous quel nom les ranger ?");
+    who.textContent = listOf(suggestion.labels);
+    text.append("💡 ", who, " " + t(suggestion.name ? "suggestionNamed" : "suggestionUnnamed"));
 
     const input = document.createElement('input');
     input.type = 'text';
     input.value = suggestion.name;
-    input.placeholder = 'Nomme ce sujet';
-    input.setAttribute('aria-label', 'Nom du sujet');
+    input.placeholder = t("suggestionPlaceholder");
+    input.setAttribute('aria-label', t("suggestionAria"));
 
     const actions = document.createElement('div');
     actions.className = 'suggestion-actions';
 
     const link = document.createElement('button');
-    link.textContent = "Lier";
+    link.textContent = t("suggestionLink");
     // Au-delà de deux domaines sans métier reconnu, Wisp ne propose plus de nom :
     // une concaténation de marques fait un titre illisible. On attend le tien.
     link.disabled = !suggestion.name.trim();
@@ -241,7 +267,7 @@ async function renderSuggestion() {
 
     const no = document.createElement('button');
     no.className = 'ghost';
-    no.textContent = "Non merci";
+    no.textContent = t("suggestionDismiss");
     no.addEventListener('click', async () => {
         no.disabled = true;
         await chrome.runtime.sendMessage({ type: "dismissSuggestion", id: suggestion.id });
@@ -299,12 +325,13 @@ async function render() {
     const note = document.getElementById('archiveNote');
     if (FILTRE) {
         note.textContent = visibles.length
-            ? `${visibles.length} archive${visibles.length > 1 ? 's' : ''} sur ${archiveList.length}`
-            : `Rien pour « ${FILTRE} » dans tes ${archiveList.length} archives`;
+            ? t(visibles.length > 1 ? "archivesFilterMany" : "archivesFilterOne",
+                [String(visibles.length), String(archiveList.length)])
+            : t("archivesFilterNone", [FILTRE, String(archiveList.length)]);
     } else {
         note.textContent = (!PRO.monetisation || PRO.pro)
-            ? 'Fermés, mais gardés au chaud. Restaurables en un clic.'
-            : `Fermés, mais gardés au chaud. ${archiveList.length} sur ${PRO.limite} en version gratuite.`;
+            ? t("archivesNote")
+            : t("archivesNoteFree", [String(archiveList.length), String(PRO.limite)]);
     }
 
     const lock = document.getElementById('lockNote');
@@ -312,9 +339,9 @@ async function render() {
         lock.hidden = false;
         lock.textContent = '';
         const p = document.createElement('span');
-        p.append('Tes ', document.createElement('strong'), ' archives gratuites sont prises. ');
+        p.append(t("lockBefore") + " ", document.createElement('strong'), " " + t("lockAfter") + " ");
         p.querySelector('strong').textContent = String(PRO.limite);
-        p.append('Wisp Pro les débloque toutes, avec la recherche dedans — achat unique, clé vérifiée sur ta machine.');
+        p.append(t("lockPitch"));
         lock.append(p);
     } else {
         lock.hidden = true;
@@ -325,24 +352,19 @@ async function render() {
 
     const sweepBtn = document.getElementById('sweepBtn');
     sweepBtn.disabled = false;
-    sweepBtn.textContent = "Ranger les onglets ouverts";
+    sweepBtn.textContent = t("sweepButton");
 
     const focusBtn = document.getElementById('focusBtn');
     focusBtn.hidden = groups.filter(g => g.windowId === win.id).length < 2;
     focusBtn.disabled = false; // il a pu être désactivé par un clic précédent
 
     document.getElementById('rule').textContent =
-        `Un groupe s'endort quand aucun de ses onglets n'a été touché depuis ` +
-        `${formatDelay(SETTINGS.ghostMin)}. Il t'avertit d'un ⏳ à ${formatDelay(SETTINGS.waitMin)}.`;
+        t("ruleText", [formatDelay(SETTINGS.ghostMin), formatDelay(SETTINGS.waitMin)]);
 
     if (groups.length === 0) {
         const empty = document.createElement('div');
         empty.className = 'empty';
-        empty.textContent =
-            `Aucun groupe pour l'instant. Wisp en crée un dès que ` +
-            `${SETTINGS.minTabsToGroup} onglets du même site sont ouverts — ` +
-            `ou fais-le toi-même : sélectionne des onglets, clic droit, ` +
-            `« Wisp : regrouper les onglets sélectionnés ».`;
+        empty.textContent = t("emptyGroups", [String(SETTINGS.minTabsToGroup), t("contextMenuGroup")]);
         list.append(empty);
         return;
     }
@@ -358,6 +380,7 @@ async function render() {
 // ----------------------- Réglages -----------------------
 
 document.addEventListener('DOMContentLoaded', async () => {
+    applyI18n();
     const stored = await chrome.storage.local.get(SETTINGS);
     // Mêmes garde-fous que dans background.js : une clé à null (champ vidé lors
     // d'un enregistrement passé) ne doit pas casser l'affichage.
@@ -413,14 +436,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             majEtatLicence();
             await render();
         } else {
-            etat.textContent = "Clé refusée. Vérifie qu'elle est copiée en entier, sans espace.";
+            etat.textContent = t("licenceRefused");
             etat.style.color = '#f87171';
         }
     });
 
     document.getElementById('sweepBtn').addEventListener('click', async (e) => {
         e.target.disabled = true;
-        e.target.textContent = "Rangement…";
+        e.target.textContent = t("sweepRunning");
         await chrome.runtime.sendMessage({ type: "sweepNow" });
         await render();
     });
@@ -441,14 +464,14 @@ function majEtatLicence() {
     const champ = document.getElementById('licenceKey');
     if (!PRO.monetisation) return;
     if (PRO.pro) {
-        etat.textContent = PRO.email ? `Pro activé — ${PRO.email}` : 'Pro activé.';
+        etat.textContent = PRO.email ? t("licenceActiveEmail", [PRO.email]) : t("licenceActive");
         etat.style.color = '#4ade80';
-        bouton.textContent = 'Désactiver';
+        bouton.textContent = t("licenceDeactivate");
         champ.placeholder = '••••••••';
     } else {
-        etat.textContent = "Achat unique. La clé est vérifiée sur ta machine, sans aucun appel réseau.";
+        etat.textContent = t("licenceIntro");
         etat.style.color = '';
-        bouton.textContent = 'Activer';
+        bouton.textContent = t("licenceActivate");
     }
 }
 
@@ -482,7 +505,7 @@ document.getElementById('saveBtn').addEventListener('click', () => {
         { waitMin, ghostMin, minTabsToGroup, whitelist, linkedDomains },
         () => {
             const btn = document.getElementById('saveBtn');
-            btn.textContent = "✅ Enregistré !";
+            btn.textContent = t("saved");
             setTimeout(() => window.close(), 800);
         }
     );

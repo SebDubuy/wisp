@@ -1,0 +1,354 @@
+{
+  "extName": {
+    "message": "Wisp"
+  },
+  "extDescription": {
+    "message": "Regroupe tes onglets par sujet automatiquement, et endort les groupes inactifs pour libérer la RAM."
+  },
+  "contextMenuGroup": {
+    "message": "Wisp : regrouper les onglets sélectionnés"
+  },
+  "newGroupTitle": {
+    "message": "Nouveau groupe ✏️"
+  },
+  "unnamedGroup": {
+    "message": "Groupe sans nom"
+  },
+  "serviceCalendar": {
+    "message": "Google Agenda"
+  },
+  "category_design": {
+    "message": "Design"
+  },
+  "category_dev": {
+    "message": "Dev"
+  },
+  "category_ai": {
+    "message": "IA"
+  },
+  "category_news": {
+    "message": "Veille"
+  },
+  "category_video": {
+    "message": "Vidéo"
+  },
+  "category_shopping": {
+    "message": "Achats"
+  },
+  "category_travel": {
+    "message": "Voyage"
+  },
+  "category_work": {
+    "message": "Travail"
+  },
+  "statSleepingTabs": {
+    "message": "Onglets endormis"
+  },
+  "statArchivedGroups": {
+    "message": "Groupes archivés"
+  },
+  "sweepButton": {
+    "message": "Ranger les onglets ouverts"
+  },
+  "sweepRunning": {
+    "message": "Rangement…"
+  },
+  "focusButton": {
+    "message": "🎯 Mode focus — endormir tout le reste"
+  },
+  "groupsTitle": {
+    "message": "Tes groupes maintenant"
+  },
+  "archivesTitle": {
+    "message": "Archives"
+  },
+  "archivesNote": {
+    "message": "Fermés, mais gardés au chaud. Restaurables en un clic."
+  },
+  "archivesNoteFree": {
+    "message": "Fermés, mais gardés au chaud. $P1$ sur $P2$ en version gratuite.",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "archiveSearchPlaceholder": {
+    "message": "Chercher un sujet, un titre, une adresse…"
+  },
+  "archivesFilterOne": {
+    "message": "$P1$ archive sur $P2$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "archivesFilterMany": {
+    "message": "$P1$ archives sur $P2$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "archivesFilterNone": {
+    "message": "Rien pour « $P1$ » dans tes $P2$ archives",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "settingsTitle": {
+    "message": "Réglages"
+  },
+  "settingMinTabs": {
+    "message": "Nb d'onglets identiques avant regroupement auto"
+  },
+  "settingDelays": {
+    "message": "Attente (⏳) / Sommeil (💤) en minutes"
+  },
+  "settingDelaysHint": {
+    "message": "⏳ prévient dans la barre d'onglets, 💤 endort pour de bon"
+  },
+  "settingLinked": {
+    "message": "Domaines liés (même sujet)"
+  },
+  "settingLinkedPlaceholder": {
+    "message": "ex : cardmarket.com = Pokémon TCG\nex : vinted.fr = Pokémon TCG"
+  },
+  "settingLinkedHint": {
+    "message": "Un par ligne : domaine = nom du sujet"
+  },
+  "settingWhitelist": {
+    "message": "Whitelist (jamais mis en veille)"
+  },
+  "settingWhitelistPlaceholder": {
+    "message": "ex : youtube.com\nex : notion.so"
+  },
+  "saveButton": {
+    "message": "Enregistrer"
+  },
+  "saved": {
+    "message": "✅ Enregistré !"
+  },
+  "licenceTitle": {
+    "message": "Wisp Pro — clé de licence"
+  },
+  "licencePlaceholder": {
+    "message": "WISP-…"
+  },
+  "licenceIntro": {
+    "message": "Achat unique. La clé est vérifiée sur ta machine, sans aucun appel réseau."
+  },
+  "licenceActivate": {
+    "message": "Activer"
+  },
+  "licenceDeactivate": {
+    "message": "Désactiver"
+  },
+  "licenceRefused": {
+    "message": "Clé refusée. Vérifie qu'elle est copiée en entier, sans espace."
+  },
+  "licenceActive": {
+    "message": "Pro activé."
+  },
+  "licenceActiveEmail": {
+    "message": "Pro activé — $P1$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "footer": {
+    "message": "Wisp — léger, discret, jamais perdu ⚡"
+  },
+  "delayLessThanMinute": {
+    "message": "moins d'une minute"
+  },
+  "delayMinutes": {
+    "message": "$P1$ min",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "delayHours": {
+    "message": "$P1$ h",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "delayHoursMinutes": {
+    "message": "$P1$ h $P2$ min",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "tabsCountOne": {
+    "message": "$P1$ onglet",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "tabsCountMany": {
+    "message": "$P1$ onglets",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "stateSleeping": {
+    "message": "Endormi · $P1$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "stateUntitled": {
+    "message": "Sans titre — Wisp l'ignore"
+  },
+  "stateActive": {
+    "message": "Ouvert sous tes yeux · $P1$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "stateWhitelisted": {
+    "message": "Protégé par ta whitelist"
+  },
+  "stateUnmeasured": {
+    "message": "Pas encore mesuré (clique un onglet)"
+  },
+  "stateSleepsNext": {
+    "message": "S'endort au prochain passage"
+  },
+  "stateSleepsIn": {
+    "message": "Dort dans $P1$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionWake": {
+    "message": "Réveiller"
+  },
+  "actionSleep": {
+    "message": "Dormir"
+  },
+  "actionArchive": {
+    "message": "Archiver"
+  },
+  "actionArchiveTitle": {
+    "message": "Ferme le groupe en le gardant restaurable"
+  },
+  "archiveLimitReached": {
+    "message": "Plafond atteint"
+  },
+  "archiveMeta": {
+    "message": "$P1$ · archivé le $P2$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "actionRestore": {
+    "message": "Restaurer"
+  },
+  "actionForget": {
+    "message": "Oublier"
+  },
+  "listLast": {
+    "message": "$P1$ et $P2$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "suggestionNamed": {
+    "message": "reviennent souvent ensemble. Les ranger sous un même sujet ?"
+  },
+  "suggestionUnnamed": {
+    "message": "reviennent souvent ensemble. Sous quel nom les ranger ?"
+  },
+  "suggestionPlaceholder": {
+    "message": "Nomme ce sujet"
+  },
+  "suggestionAria": {
+    "message": "Nom du sujet"
+  },
+  "suggestionLink": {
+    "message": "Lier"
+  },
+  "suggestionDismiss": {
+    "message": "Non merci"
+  },
+  "lockBefore": {
+    "message": "Tes"
+  },
+  "lockAfter": {
+    "message": "archives gratuites sont prises."
+  },
+  "lockPitch": {
+    "message": "Wisp Pro les débloque toutes, avec la recherche dedans — achat unique, clé vérifiée sur ta machine."
+  },
+  "ruleText": {
+    "message": "Un groupe s'endort quand aucun de ses onglets n'a été touché depuis $P1$. Il t'avertit d'un ⏳ à $P2$.",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "emptyGroups": {
+    "message": "Aucun groupe pour l'instant. Wisp en crée un dès que $P1$ onglets du même site sont ouverts — ou fais-le toi-même : sélectionne des onglets, clic droit, « $P2$ ».",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  }
+}

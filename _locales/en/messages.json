@@ -1,0 +1,354 @@
+{
+  "extName": {
+    "message": "Wisp"
+  },
+  "extDescription": {
+    "message": "Groups your tabs by topic automatically, and puts idle groups to sleep to free up RAM."
+  },
+  "contextMenuGroup": {
+    "message": "Wisp: group selected tabs"
+  },
+  "newGroupTitle": {
+    "message": "New group ✏️"
+  },
+  "unnamedGroup": {
+    "message": "Unnamed group"
+  },
+  "serviceCalendar": {
+    "message": "Google Calendar"
+  },
+  "category_design": {
+    "message": "Design"
+  },
+  "category_dev": {
+    "message": "Dev"
+  },
+  "category_ai": {
+    "message": "AI"
+  },
+  "category_news": {
+    "message": "News"
+  },
+  "category_video": {
+    "message": "Video"
+  },
+  "category_shopping": {
+    "message": "Shopping"
+  },
+  "category_travel": {
+    "message": "Travel"
+  },
+  "category_work": {
+    "message": "Work"
+  },
+  "statSleepingTabs": {
+    "message": "Sleeping tabs"
+  },
+  "statArchivedGroups": {
+    "message": "Archived groups"
+  },
+  "sweepButton": {
+    "message": "Tidy open tabs"
+  },
+  "sweepRunning": {
+    "message": "Tidying…"
+  },
+  "focusButton": {
+    "message": "🎯 Focus mode — put everything else to sleep"
+  },
+  "groupsTitle": {
+    "message": "Your groups right now"
+  },
+  "archivesTitle": {
+    "message": "Archives"
+  },
+  "archivesNote": {
+    "message": "Closed, but kept safe. Restore them in one click."
+  },
+  "archivesNoteFree": {
+    "message": "Closed, but kept safe. $P1$ of $P2$ in the free version.",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "archiveSearchPlaceholder": {
+    "message": "Search a topic, a title, an address…"
+  },
+  "archivesFilterOne": {
+    "message": "$P1$ of $P2$ archives",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "archivesFilterMany": {
+    "message": "$P1$ of $P2$ archives",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "archivesFilterNone": {
+    "message": "Nothing for “$P1$” in your $P2$ archives",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "settingsTitle": {
+    "message": "Settings"
+  },
+  "settingMinTabs": {
+    "message": "Matching tabs before auto-grouping"
+  },
+  "settingDelays": {
+    "message": "Warning (⏳) / Sleep (💤) in minutes"
+  },
+  "settingDelaysHint": {
+    "message": "⏳ warns you in the tab strip, 💤 puts it to sleep for good"
+  },
+  "settingLinked": {
+    "message": "Linked domains (same topic)"
+  },
+  "settingLinkedPlaceholder": {
+    "message": "e.g. cardmarket.com = Pokémon TCG\ne.g. vinted.fr = Pokémon TCG"
+  },
+  "settingLinkedHint": {
+    "message": "One per line: domain = topic name"
+  },
+  "settingWhitelist": {
+    "message": "Whitelist (never put to sleep)"
+  },
+  "settingWhitelistPlaceholder": {
+    "message": "e.g. youtube.com\ne.g. notion.so"
+  },
+  "saveButton": {
+    "message": "Save"
+  },
+  "saved": {
+    "message": "✅ Saved!"
+  },
+  "licenceTitle": {
+    "message": "Wisp Pro — licence key"
+  },
+  "licencePlaceholder": {
+    "message": "WISP-…"
+  },
+  "licenceIntro": {
+    "message": "One-time purchase. The key is checked on your machine, with no network call."
+  },
+  "licenceActivate": {
+    "message": "Activate"
+  },
+  "licenceDeactivate": {
+    "message": "Deactivate"
+  },
+  "licenceRefused": {
+    "message": "Key rejected. Check it was copied in full, with no spaces."
+  },
+  "licenceActive": {
+    "message": "Pro activated."
+  },
+  "licenceActiveEmail": {
+    "message": "Pro activated — $P1$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "footer": {
+    "message": "Wisp — light, quiet, never lost ⚡"
+  },
+  "delayLessThanMinute": {
+    "message": "less than a minute"
+  },
+  "delayMinutes": {
+    "message": "$P1$ min",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "delayHours": {
+    "message": "$P1$ h",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "delayHoursMinutes": {
+    "message": "$P1$ h $P2$ min",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "tabsCountOne": {
+    "message": "$P1$ tab",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "tabsCountMany": {
+    "message": "$P1$ tabs",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "stateSleeping": {
+    "message": "Asleep · $P1$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "stateUntitled": {
+    "message": "Untitled — Wisp leaves it alone"
+  },
+  "stateActive": {
+    "message": "Open right now · $P1$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "stateWhitelisted": {
+    "message": "Protected by your whitelist"
+  },
+  "stateUnmeasured": {
+    "message": "Not measured yet (click a tab)"
+  },
+  "stateSleepsNext": {
+    "message": "Falls asleep on the next check"
+  },
+  "stateSleepsIn": {
+    "message": "Sleeps in $P1$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      }
+    }
+  },
+  "actionWake": {
+    "message": "Wake"
+  },
+  "actionSleep": {
+    "message": "Sleep"
+  },
+  "actionArchive": {
+    "message": "Archive"
+  },
+  "actionArchiveTitle": {
+    "message": "Closes the group but keeps it restorable"
+  },
+  "archiveLimitReached": {
+    "message": "Limit reached"
+  },
+  "archiveMeta": {
+    "message": "$P1$ · archived $P2$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "actionRestore": {
+    "message": "Restore"
+  },
+  "actionForget": {
+    "message": "Forget"
+  },
+  "listLast": {
+    "message": "$P1$ and $P2$",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "suggestionNamed": {
+    "message": "often show up together. File them under one topic?"
+  },
+  "suggestionUnnamed": {
+    "message": "often show up together. What should the topic be called?"
+  },
+  "suggestionPlaceholder": {
+    "message": "Name this topic"
+  },
+  "suggestionAria": {
+    "message": "Topic name"
+  },
+  "suggestionLink": {
+    "message": "Link"
+  },
+  "suggestionDismiss": {
+    "message": "No thanks"
+  },
+  "lockBefore": {
+    "message": "Your"
+  },
+  "lockAfter": {
+    "message": "free archives are all used."
+  },
+  "lockPitch": {
+    "message": "Wisp Pro unlocks them all, with search inside — one-time purchase, key checked on your machine."
+  },
+  "ruleText": {
+    "message": "A group falls asleep when none of its tabs has been touched for $P1$. It warns you with ⏳ at $P2$.",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  },
+  "emptyGroups": {
+    "message": "No groups yet. Wisp creates one as soon as $P1$ tabs from the same site are open — or do it yourself: select tabs, right-click, “$P2$”.",
+    "placeholders": {
+      "p1": {
+        "content": "$1"
+      },
+      "p2": {
+        "content": "$2"
+      }
+    }
+  }
+}

@@ -1,8 +1,9 @@
 {
     "manifest_version": 3,
-    "name": "Wisp",
+    "name": "__MSG_extName__",
     "version": "1.0.0",
-    "description": "Regroupe tes onglets par sujet automatiquement, et endort les groupes inactifs pour libérer la RAM.",
+    "description": "__MSG_extDescription__",
+    "default_locale": "en",
     "homepage_url": "https://wisptab.netlify.app",
     "icons": {
         "16": "icon16.png",

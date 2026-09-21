@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 
 <head>
     <meta charset="UTF-8">
@@ -403,21 +403,21 @@
         <div class="stats-row">
             <div class="stats-card">
                 <span id="ghostCount">0</span>
-                <label>Onglets endormis</label>
+                <label data-i18n="statSleepingTabs"></label>
             </div>
             <div class="stats-card">
                 <span id="archiveCount">0</span>
-                <label>Groupes archivés</label>
+                <label data-i18n="statArchivedGroups"></label>
             </div>
         </div>
 
         <div class="suggestion" id="suggestion" hidden></div>
 
-        <button id="sweepBtn">Ranger les onglets ouverts</button>
-        <button id="focusBtn" hidden>🎯 Mode focus — endormir tout le reste</button>
+        <button id="sweepBtn" data-i18n="sweepButton"></button>
+        <button id="focusBtn" data-i18n="focusButton" hidden></button>
 
         <div class="groups">
-            <p class="section-title">Tes groupes maintenant</p>
+            <p class="section-title" data-i18n="groupsTitle"></p>
             <p class="section-note" id="rule"></p>
             <div id="groupList"></div>
         </div>
@@ -425,50 +425,50 @@
         <div class="locked" id="lockNote" hidden></div>
 
         <div class="groups" id="archiveSection" hidden>
-            <p class="section-title">Archives <span id="proBadge" class="pro-badge" hidden>Pro</span></p>
-            <p class="section-note" id="archiveNote">Fermés, mais gardés au chaud. Restaurables en un clic.</p>
-            <input type="text" id="archiveSearch" placeholder="Chercher un sujet, un titre, une adresse…" hidden>
+            <p class="section-title"><span data-i18n="archivesTitle"></span> <span id="proBadge" class="pro-badge" hidden>Pro</span></p>
+            <p class="section-note" id="archiveNote" data-i18n="archivesNote"></p>
+            <input type="text" id="archiveSearch" data-i18n-placeholder="archiveSearchPlaceholder" hidden>
             <div id="archiveList"></div>
         </div>
 
         <details class="settings">
-            <summary>Réglages</summary>
+            <summary data-i18n="settingsTitle"></summary>
 
             <div class="field">
-                <label class="title">Nb d'onglets identiques avant regroupement auto</label>
+                <label class="title" data-i18n="settingMinTabs"></label>
                 <input type="number" id="minTabsToGroup" min="2">
             </div>
 
             <div class="field">
-                <label class="title">Attente (⏳) / Sommeil (💤) en minutes</label>
+                <label class="title" data-i18n="settingDelays"></label>
                 <div style="display: flex; gap: 10px;">
                     <input type="number" id="waitMin" min="1">
                     <input type="number" id="ghostMin" min="1">
                 </div>
-                <label class="hint">⏳ prévient dans la barre d'onglets, 💤 endort pour de bon</label>
+                <label class="hint" data-i18n="settingDelaysHint"></label>
             </div>
 
             <div class="field">
-                <label class="title">Domaines liés (même sujet)</label>
-                <textarea id="linkedDomains" placeholder="ex : cardmarket.com = Pokémon TCG&#10;ex : vinted.fr = Pokémon TCG"></textarea>
-                <label class="hint">Un par ligne : domaine = nom du sujet</label>
+                <label class="title" data-i18n="settingLinked"></label>
+                <textarea id="linkedDomains" data-i18n-placeholder="settingLinkedPlaceholder"></textarea>
+                <label class="hint" data-i18n="settingLinkedHint"></label>
             </div>
 
             <div class="field">
-                <label class="title">Whitelist (jamais mis en veille)</label>
-                <textarea id="whitelist" placeholder="ex : youtube.com&#10;ex : notion.so"></textarea>
+                <label class="title" data-i18n="settingWhitelist"></label>
+                <textarea id="whitelist" data-i18n-placeholder="settingWhitelistPlaceholder"></textarea>
             </div>
 
-            <button id="saveBtn">Enregistrer</button>
+            <button id="saveBtn" data-i18n="saveButton"></button>
 
             <div class="field" id="proField" hidden style="margin-top: 22px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px;">
-                <label class="title">Wisp Pro — clé de licence</label>
-                <input type="text" id="licenceKey" placeholder="WISP-…">
-                <label class="hint" id="licenceState">Achat unique. La clé est vérifiée sur ta machine, sans aucun appel réseau.</label>
-                <button id="licenceBtn" style="margin-top: 8px;">Activer</button>
+                <label class="title" data-i18n="licenceTitle"></label>
+                <input type="text" id="licenceKey" data-i18n-placeholder="licencePlaceholder">
+                <label class="hint" id="licenceState" data-i18n="licenceIntro"></label>
+                <button id="licenceBtn" style="margin-top: 8px;" data-i18n="licenceActivate"></button>
             </div>
         </details>
-        <div class="footer">Wisp — léger, discret, jamais perdu ⚡</div>
+        <div class="footer" data-i18n="footer"></div>
     </div>
     <script src="popup.js"></script>
 </body>

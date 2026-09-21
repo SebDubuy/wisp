@@ -18,6 +18,13 @@ const SETTINGS_KEYS = ["waitMin", "ghostMin", "minTabsToGroup", "whitelist", "li
 // (trop proche d'un groupe non stylé) et sert de dernier recours.
 const PALETTE = ["cyan", "purple", "orange", "green", "pink", "blue", "yellow", "red"];
 
+// Texte dans la langue du navigateur (_locales/fr ou en, anglais par défaut).
+// Repli sur la clé elle-même : un message manquant se voit au lieu de
+// produire un titre de groupe vide.
+function t(key, substitutions) {
+    return chrome.i18n.getMessage(key, substitutions) || key;
+}
+
 // Hôtes multi-services : le domaine de base ne veut rien dire. mail.google.com
 // et gemini.google.com ne sont pas le même sujet, même s'ils partagent google.com.
 const SERVICE_HOSTS = {
@@ -25,7 +32,7 @@ const SERVICE_HOSTS = {
     "drive.google.com": "Google Drive",
     "docs.google.com": "Google Docs",
     "sheets.google.com": "Google Sheets",
-    "calendar.google.com": "Google Agenda",
+    "calendar.google.com": t("serviceCalendar"),
     "meet.google.com": "Google Meet",
     "photos.google.com": "Google Photos",
     "gemini.google.com": "Gemini",
@@ -481,7 +488,7 @@ function categoryOfUrl(url) {
     if (!id) return null;
     // Un sujet défini à la main prime toujours sur le lexique.
     if (LINKED_DOMAINS[id.host] || LINKED_DOMAINS[id.base]) return null;
-    return CATEGORY_HINTS[id.key] || null;
+    return categoryOf(id.key);
 }
 
 async function groupByCategory(tab) {
@@ -662,48 +669,57 @@ const MAX_CLUSTER = 4;
 // uniquement à proposer un nom de sujet crédible ("Design" plutôt que
 // "Figma + Dribbble"). L'utilisateur reste libre de le réécrire.
 const CATEGORY_HINTS = {
-    "figma.com": "Design", "dribbble.com": "Design", "behance.net": "Design",
-    "awwwards.com": "Design", "mobbin.com": "Design", "coolors.co": "Design",
-    "unsplash.com": "Design", "canva.com": "Design", "framer.com": "Design",
-    "webflow.com": "Design", "pinterest.fr": "Design", "pinterest.com": "Design",
-    "jitter.video": "Design", "fontshare.com": "Design", "lottiefiles.com": "Design",
+    "figma.com": "design", "dribbble.com": "design", "behance.net": "design",
+    "awwwards.com": "design", "mobbin.com": "design", "coolors.co": "design",
+    "unsplash.com": "design", "canva.com": "design", "framer.com": "design",
+    "webflow.com": "design", "pinterest.fr": "design", "pinterest.com": "design",
+    "jitter.video": "design", "fontshare.com": "design", "lottiefiles.com": "design",
 
-    "github.com": "Dev", "gitlab.com": "Dev", "stackoverflow.com": "Dev",
-    "npmjs.com": "Dev", "codepen.io": "Dev", "stackblitz.com": "Dev",
-    "vercel.com": "Dev", "netlify.com": "Dev", "replit.com": "Dev",
-    "mozilla.org": "Dev", "caniuse.com": "Dev", "docker.com": "Dev",
-    "nodejs.org": "Dev", "python.org": "Dev", "rust-lang.org": "Dev",
+    "github.com": "dev", "gitlab.com": "dev", "stackoverflow.com": "dev",
+    "npmjs.com": "dev", "codepen.io": "dev", "stackblitz.com": "dev",
+    "vercel.com": "dev", "netlify.com": "dev", "replit.com": "dev",
+    "mozilla.org": "dev", "caniuse.com": "dev", "docker.com": "dev",
+    "nodejs.org": "dev", "python.org": "dev", "rust-lang.org": "dev",
 
-    "chatgpt.com": "IA", "claude.ai": "IA", "gemini.google.com": "IA",
-    "openai.com": "IA", "anthropic.com": "IA", "huggingface.co": "IA",
-    "perplexity.ai": "IA", "midjourney.com": "IA", "mistral.ai": "IA",
-    "elevenlabs.io": "IA", "runwayml.com": "IA", "suno.com": "IA",
+    "chatgpt.com": "ai", "claude.ai": "ai", "gemini.google.com": "ai",
+    "openai.com": "ai", "anthropic.com": "ai", "huggingface.co": "ai",
+    "perplexity.ai": "ai", "midjourney.com": "ai", "mistral.ai": "ai",
+    "elevenlabs.io": "ai", "runwayml.com": "ai", "suno.com": "ai",
 
-    "x.com": "Veille", "reddit.com": "Veille", "linkedin.com": "Veille",
-    "ycombinator.com": "Veille", "producthunt.com": "Veille",
-    "medium.com": "Veille", "substack.com": "Veille",
+    "x.com": "news", "reddit.com": "news", "linkedin.com": "news",
+    "ycombinator.com": "news", "producthunt.com": "news",
+    "medium.com": "news", "substack.com": "news",
 
-    "youtube.com": "Vidéo", "vimeo.com": "Vidéo", "twitch.tv": "Vidéo",
-    "dailymotion.com": "Vidéo",
+    "youtube.com": "video", "vimeo.com": "video", "twitch.tv": "video",
+    "dailymotion.com": "video",
 
-    "amazon.fr": "Achats", "amazon.com": "Achats", "ebay.fr": "Achats",
-    "ebay.com": "Achats", "leboncoin.fr": "Achats", "vinted.fr": "Achats",
-    "cardmarket.com": "Achats", "aliexpress.com": "Achats", "cdiscount.com": "Achats",
-    "fnac.com": "Achats", "darty.com": "Achats", "boulanger.com": "Achats",
-    "decathlon.fr": "Achats", "ikea.com": "Achats", "zalando.fr": "Achats",
-    "laredoute.fr": "Achats", "rakuten.com": "Achats", "backmarket.fr": "Achats",
-    "temu.com": "Achats", "shein.com": "Achats", "etsy.com": "Achats",
-    "asos.com": "Achats", "zara.com": "Achats",
+    "amazon.fr": "shopping", "amazon.com": "shopping", "ebay.fr": "shopping",
+    "ebay.com": "shopping", "leboncoin.fr": "shopping", "vinted.fr": "shopping",
+    "cardmarket.com": "shopping", "aliexpress.com": "shopping", "cdiscount.com": "shopping",
+    "fnac.com": "shopping", "darty.com": "shopping", "boulanger.com": "shopping",
+    "decathlon.fr": "shopping", "ikea.com": "shopping", "zalando.fr": "shopping",
+    "laredoute.fr": "shopping", "rakuten.com": "shopping", "backmarket.fr": "shopping",
+    "temu.com": "shopping", "shein.com": "shopping", "etsy.com": "shopping",
+    "asos.com": "shopping", "zara.com": "shopping",
 
-    "booking.com": "Voyage", "airbnb.fr": "Voyage", "airbnb.com": "Voyage",
-    "skyscanner.fr": "Voyage", "kayak.fr": "Voyage", "tripadvisor.fr": "Voyage",
-    "sncf-connect.com": "Voyage", "ryanair.com": "Voyage", "easyjet.com": "Voyage",
-    "expedia.fr": "Voyage", "hotels.com": "Voyage", "getyourguide.fr": "Voyage",
+    "booking.com": "travel", "airbnb.fr": "travel", "airbnb.com": "travel",
+    "skyscanner.fr": "travel", "kayak.fr": "travel", "tripadvisor.fr": "travel",
+    "sncf-connect.com": "travel", "ryanair.com": "travel", "easyjet.com": "travel",
+    "expedia.fr": "travel", "hotels.com": "travel", "getyourguide.fr": "travel",
 
-    "notion.so": "Travail", "airtable.com": "Travail", "linear.app": "Travail",
-    "slack.com": "Travail", "trello.com": "Travail", "asana.com": "Travail",
-    "monday.com": "Travail", "clickup.com": "Travail"
+    "notion.so": "work", "airtable.com": "work", "linear.app": "work",
+    "slack.com": "work", "trello.com": "work", "asana.com": "work",
+    "monday.com": "work", "clickup.com": "work"
 };
+
+// Le nom affiché d'une catégorie, dans la langue du navigateur. Le lexique
+// ne porte que des identifiants : le français produit exactement les titres
+// de la 1.0.0 (« Achats », « IA »…), sans quoi chaque utilisateur existant
+// verrait naître un doublon à côté de ses groupes.
+function categoryOf(key) {
+    const id = CATEGORY_HINTS[key];
+    return id ? t(`category_${id}`) : null;
+}
 
 function pairKey(a, b) {
     return [a, b].sort().join("|");
@@ -765,8 +781,8 @@ async function habitSuggestion(dismissed) {
     if (!best) return null;
 
     const labels = best.keys.map(labelForKey);
-    const categories = new Set(best.keys.map(k => CATEGORY_HINTS[k]).filter(Boolean));
-    const known = categories.size === 1 && best.keys.every(k => CATEGORY_HINTS[k]);
+    const categories = new Set(best.keys.map(categoryOf).filter(Boolean));
+    const known = categories.size === 1 && best.keys.every(k => categoryOf(k));
 
     // Deux marques concaténées restent lisibles. Au-delà, le titre devient une
     // bouillie du genre "GitHub + Graphiste + Jitter + Motion" — qui finit dans
@@ -841,7 +857,7 @@ async function linkCluster(keys, topic, suggestionId) {
     for (const key of list) {
         // Si le lexique donne déjà ce sujet à ce domaine, la ligne serait un
         // doublon sans effet : on l'omet pour garder les réglages lisibles.
-        if (CATEGORY_HINTS[key] === name) continue;
+        if (categoryOf(key) === name) continue;
         next[key] = name;
     }
     await chrome.storage.local.set({ linkedDomains: next });
@@ -960,7 +976,7 @@ async function archiveGroup(groupId) {
 
     const entry = {
         id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-        topic: topicOfGroup(group) || "Groupe sans nom",
+        topic: topicOfGroup(group) || t("unnamedGroup"),
         color: group.color,
         savedAt: Date.now(),
         tabs: tabs.map(t => ({ url: t.url, title: t.title || t.url }))
@@ -1176,7 +1192,7 @@ chrome.runtime.onInstalled.addListener(async () => {
     await chrome.contextMenus.removeAll();
     chrome.contextMenus.create({
         id: "wisp-group-selection",
-        title: "Wisp : regrouper les onglets sélectionnés",
+        title: t("contextMenuGroup"),
         contexts: ["all"]
     });
     ensureAlarm();
@@ -1189,5 +1205,5 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     if (highlighted.length < 2) return;
     const color = await pickColor(tab.windowId);
     const groupId = await chrome.tabs.group({ tabIds: highlighted.map(t => t.id) });
-    await chrome.tabGroups.update(groupId, { title: "Nouveau groupe ✏️", color });
+    await chrome.tabGroups.update(groupId, { title: t("newGroupTitle"), color });
 });

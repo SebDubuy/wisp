@@ -1,0 +1,20 @@
+You have too many tabs open. Your RAM isn't the problem: Chrome already discards inactive tabs on its own. The problem is that you can't find anything, and you don't dare close anything.
+
+Wisp takes care of that.
+
+It groups tabs, on its own
+Three pages from the same site form a group. So do two searches on the same topic: "lisbon weekend" then "what to do in lisbon" meet under Lisbon, because Wisp keeps the word they share.
+
+It warns you before it sleeps
+Halfway through, an hourglass appears on the group in your tab strip. You see sleep coming, and the marker disappears if you go back. Nothing vanishes by surprise.
+
+It frees up memory, and attention
+Putting a group to sleep gives back RAM. Archiving it gives back attention: the whole group leaves your tab strip and comes back in one click, with its name and its colour.
+
+It learns your topics, without sending anything
+Open Amazon, eBay and Etsy at the same time: they file themselves under "Shopping". For everything else, Wisp simply watches which sites keep coming back together and offers to link them. You name it, you accept, or you decline.
+
+What Wisp doesn't do
+It doesn't read the content of your pages. It injects no script. It contacts no server, not even mine. There's no account to create, and the extension works offline.
+
+Free, no ads, no tracker.

@@ -7,28 +7,39 @@
 // par construction, pas par oubli.
 import { readFileSync, existsSync, mkdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
+import { pathToFileURL } from "node:url";
 
-const FICHIERS = [
+// Exportée pour tests/paquet.test.mjs, qui la confronte à ce que le manifeste
+// fait réellement charger : un fichier oublié ici ne se verrait qu'une fois
+// l'extension refusée par le Store.
+export const FICHIERS = [
     "manifest.json", "background.js", "popup.html", "popup.js",
-    "icon16.png", "icon32.png", "icon48.png", "icon128.png"
+    "icon16.png", "icon32.png", "icon48.png", "icon128.png",
+    "_locales/en/messages.json", "_locales/fr/messages.json"
 ];
 
-const manquants = FICHIERS.filter(f => !existsSync(f));
-if (manquants.length) {
-    console.error(`Fichiers introuvables : ${manquants.join(", ")}`);
-    process.exit(1);
+// Importé par un test : on fournit la liste, on ne fabrique rien.
+if (import.meta.url === pathToFileURL(process.argv[1]).href) empaqueter();
+
+function empaqueter() {
+
+    const manquants = FICHIERS.filter(f => !existsSync(f));
+    if (manquants.length) {
+        console.error(`Fichiers introuvables : ${manquants.join(", ")}`);
+        process.exit(1);
+    }
+
+    const { version } = JSON.parse(readFileSync("manifest.json", "utf8"));
+    const sortie = `dist/wisp-${version}.zip`;
+
+    // Le Store refuse un paquet dont la version a déjà été publiée : mieux vaut
+    // l'apprendre ici que dans le tableau de bord.
+    if (existsSync(sortie)) {
+        console.error(`${sortie} existe déjà. Monte "version" dans manifest.json avant d'empaqueter.`);
+        process.exit(1);
+    }
+
+    mkdirSync("dist", { recursive: true });
+    execFileSync("zip", ["-X", "-q", sortie, ...FICHIERS], { stdio: "inherit" });
+    console.log(`Paquet prêt : ${sortie} (${FICHIERS.length} fichiers)`);
 }
-
-const { version } = JSON.parse(readFileSync("manifest.json", "utf8"));
-const sortie = `dist/wisp-${version}.zip`;
-
-// Le Store refuse un paquet dont la version a déjà été publiée : mieux vaut
-// l'apprendre ici que dans le tableau de bord.
-if (existsSync(sortie)) {
-    console.error(`${sortie} existe déjà. Monte "version" dans manifest.json avant d'empaqueter.`);
-    process.exit(1);
-}
-
-mkdirSync("dist", { recursive: true });
-execFileSync("zip", ["-X", "-q", sortie, ...FICHIERS], { stdio: "inherit" });
-console.log(`Paquet prêt : ${sortie} (${FICHIERS.length} fichiers)`);
