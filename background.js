@@ -789,14 +789,16 @@ const CATEGORY_HINTS = {
 
     // Les services Google se rangent ensemble ; chacun garde son propre groupe
     // dès qu'il atteint seul le seuil (trois onglets Gmail donnent « Gmail »).
-    // Gemini reste en « ai », avec ChatGPT et Claude : c'est là qu'on le cherche.
+    // Gemini en fait partie, choix de l'utilisateur : il se range avec Gmail et
+    // Drive plutôt qu'avec ChatGPT et Claude.
+    "gemini.google.com": "google",
     "mail.google.com": "google", "drive.google.com": "google", "docs.google.com": "google",
     "sheets.google.com": "google", "calendar.google.com": "google", "meet.google.com": "google",
     "photos.google.com": "google", "chat.google.com": "google", "ads.google.com": "google",
     "analytics.google.com": "google", "search.google.com": "google",
     "console.cloud.google.com": "google", "keep.google.com": "google",
 
-    "chatgpt.com": "ai", "claude.ai": "ai", "gemini.google.com": "ai",
+    "chatgpt.com": "ai", "claude.ai": "ai",
     "openai.com": "ai", "anthropic.com": "ai", "huggingface.co": "ai",
     "perplexity.ai": "ai", "midjourney.com": "ai", "mistral.ai": "ai",
     "elevenlabs.io": "ai", "runwayml.com": "ai", "suno.com": "ai",

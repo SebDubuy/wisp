@@ -113,7 +113,7 @@ test("une erreur sur un onglet n'interrompt pas le balayage", async () => {
     assert.notEqual(nav.groupeDe(2), -1, "les onglets suivants sont quand même examinés");
 });
 
-test("Gmail, Drive et Google Ads forment un groupe Google", async () => {
+test("Gmail, Drive, Google Ads et Gemini forment un groupe Google", async () => {
     const nav = fauxNavigateur([{ id: 1, onglets: [
         web(1, "https://mail.google.com/mail/u/0/#inbox"),
         web(2, "https://drive.google.com/drive/shared-drives"),
@@ -123,7 +123,7 @@ test("Gmail, Drive et Google Ads forment un groupe Google", async () => {
     const w = chargerWisp({ chrome: nav.chrome });
     await w.sweepExistingTabs();
     assert.deepEqual(nav.titres(), ["Google"]);
-    assert.equal(nav.groupeDe(4), -1, "Gemini reste dans la catégorie IA");
+    assert.equal(nav.groupeDe(4), nav.groupeDe(1), "Gemini rejoint les autres services Google");
 });
 
 test("les services Google ont un nom, et une catégorie", () => {
@@ -132,7 +132,7 @@ test("les services Google ont un nom, et une catégorie", () => {
     assert.equal(fr.getTopic("https://ads.google.com/aw/overview"), "Google Ads");
     assert.equal(fr.categoryOfUrl("https://ads.google.com/aw/overview"), "Google");
     assert.equal(en.categoryOfUrl("https://mail.google.com/mail/u/0"), "Google");
-    assert.equal(fr.categoryOfUrl("https://gemini.google.com/app"), "IA");
+    assert.equal(fr.categoryOfUrl("https://gemini.google.com/app"), "Google");
     assert.equal(fr.getTopic("https://www.google.com/search?q=x"), null, "la recherche reste exclue");
 });
 
