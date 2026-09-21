@@ -87,7 +87,8 @@ Le manifeste est lu automatiquement : nom, version et icônes se remplissent seu
 - **Description courte** et **Description détaillée** : les textes plus haut
 - **Category** : Productivity
 - **Language** : Français
-- **Screenshots** : les cinq fichiers de `store/`, dans l'ordre 1 à 5
+- **Screenshots** : les cinq fichiers de `store/`, dans l'ordre 1 à 5 — en **français** ; pour la fiche **anglaise**, ceux de `store/en/`
+- **Régénérer tous les visuels** (captures, tuile, bannière, fr + en) : `store/visuels/generer.cjs`. Le modèle lit le CSS réel du popup et les messages réels de `_locales` : à relancer après tout changement de texte ou de style du popup, pour que les captures ne mentent pas
 - **Small promo tile** : `tuile-440x280.png`
 - **Support email** : ton adresse
 - **Website** : ton adresse Netlify

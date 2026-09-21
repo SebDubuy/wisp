@@ -1,0 +1,246 @@
+<!doctype html>
+<!--
+  Modèle des visuels du Chrome Web Store (captures 1280×800, tuile, bannière).
+  Ne s'ouvre pas tel quel : store/visuels/generer.cjs y injecte le CSS réel du
+  popup et les messages réels de _locales, puis photographie chaque visuel.
+  Les textes du popup ne sont donc jamais recopiés : ils viennent de
+  l'extension, et les captures ne peuvent pas diverger du produit.
+  Seuls les titres marketing (à gauche) vivent ici, dans ACCROCHES.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  html, body { margin: 0; }
+  body {
+    background: radial-gradient(ellipse 90% 80% at 15% 10%, #141b29 0%, #0a0e16 45%, #05070b 100%);
+    color: #e9ecf3; font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased; overflow: hidden;
+  }
+  .cadre { position: relative; display: flex; align-items: center; justify-content: space-between; box-sizing: border-box; }
+  .texte { flex: none; }
+  h1 {
+    font-family: 'Archivo', 'Helvetica Neue', Arial, sans-serif; font-weight: 700;
+    font-size: 52px; line-height: 1.06; letter-spacing: -0.035em; margin: 0 0 26px;
+  }
+  h1 .accent { color: #36DDF3; }
+  .sous { font-size: 18px; line-height: 1.68; color: #a0a9bc; margin: 0; }
+  .marque { display: flex; align-items: center; gap: 14px; margin-bottom: 26px;
+    font-family: 'Archivo', sans-serif; font-weight: 700; letter-spacing: -0.035em; }
+  .logo { display: flex; flex-direction: column; gap: 5px; }
+  .logo i { display: block; border-radius: 4px; }
+
+  /* Avant / après : la barre d'onglets en vrac, puis rangée */
+  .etiquette { font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; margin: 0 0 10px; }
+  .bande { background: #0c1018; border: 1px solid #1a2130; border-radius: 12px; padding: 13px 14px;
+    display: flex; flex-wrap: wrap; gap: 6px; }
+  .onglet { display: flex; align-items: center; gap: 9px; width: 132px; height: 36px; box-sizing: border-box;
+    padding: 0 11px; border-radius: 7px; background: #151b27; border: 1px solid #1f2736;
+    font-size: 13px; color: #c2cad9; white-space: nowrap; overflow: hidden; }
+  .onglet span:last-child { overflow: hidden; text-overflow: ellipsis; }
+  .fav { width: 16px; height: 16px; border-radius: 4px; flex: none; display: inline-flex; align-items: center;
+    justify-content: center; font-size: 9.5px; font-weight: 700; color: #fff; }
+  .pastille { height: 36px; display: inline-flex; align-items: center; padding: 0 15px; border-radius: 8px;
+    font-size: 13.5px; font-weight: 600; }
+
+  /* Cartes de la vie privée */
+  .cartes { display: flex; flex-direction: column; gap: 13px; width: 560px; }
+  .carte { background: #0b0f17; border: 1px solid #1a2130; border-radius: 16px; padding: 24px 22px; }
+  .carte b { display: block; font-size: 16.5px; margin-bottom: 7px; color: #eef1f6; }
+  .carte span { font-size: 14px; color: #98a2b6; }
+
+  /* L'hôte du popup : le CSS réel vit dans son Shadow DOM */
+  .popup-hote { flex: none; width: 360px; border-radius: 18px; overflow: hidden; font-family: sans-serif;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 40px 90px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.3); }
+</style>
+</head>
+<body>
+<div id="scene"></div>
+<script>
+/*DONNEES*/
+
+// ---- Messages de l'extension, résolus comme Chrome ($P1$ -> 1re valeur) ----
+function t(cle, valeurs = []) {
+  const e = MESSAGES[cle];
+  if (!e) return `⟦${cle}⟧`; // une clé manquante saute aux yeux sur l'image
+  return e.message.replace(/\$P(\d)\$/g, (_, i) => valeurs[i - 1] ?? "").replace(/\$\$/g, "$");
+}
+const onglets = (n) => t(n === 1 ? "tabsCountOne" : "tabsCountMany", [String(n)]);
+const dateCourte = (jour) => new Date(2026, 7, jour).toLocaleDateString(LANGUE, { day: "numeric", month: "short" });
+const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+
+// ---- Accroches : le seul texte propre aux visuels ----
+const ACCROCHES = {
+  fr: {
+    avant: "Avant", apres: "Après",
+    s1: { t: "Il regroupe tes onglets <span class=accent>tout seul</span>.",
+          s: "Par site, ou par recherche : deux requêtes sur le même sujet forment un groupe nommé avec tes propres mots." },
+    s2: { t: "Endors, réveille ou archive un groupe <span class=accent>entier</span>.",
+          s: "Chaque groupe affiche son état et le temps qui lui reste avant de s’endormir. Tout se pilote d’un clic." },
+    s3: { t: "Il apprend tes sujets, <span class=accent>sans rien envoyer</span>.",
+          s: "Deux sites reviennent toujours ensemble ? Wisp propose de les lier. Tu nommes, tu valides, ou tu refuses." },
+    s4: { t: "Range un groupe entier. Retrouve-le <span class=accent>en un clic</span>.",
+          s: "Archiver ferme tout le groupe sans rien perdre : il revient avec son nom et sa couleur, quand tu veux." },
+    s5: { t: "Wisp ne lit pas tes pages.",
+          s: "Il voit l’adresse et le titre de tes onglets — ce que ta barre d’onglets affiche déjà. Jamais leur contenu.",
+          c: [["Aucun regard sur le contenu", "Wisp n’injecte aucun script dans les pages que tu visites."],
+              ["Aucune connexion sortante", "Tout est calculé et stocké sur ta machine. Aucun serveur, jamais."],
+              ["Aucun compte", "Rien à créer, rien à connecter. Tu installes, ça marche."]] },
+    tuile: { t: "Trop d’onglets ouverts.", a: "Aucun perdu.", s: "Il les regroupe par sujet, tout seul." },
+    banniere: { s: "Il les regroupe par sujet tout seul, prévient avant d’endormir, et ne contacte aucun serveur." },
+    donnees: {
+      avant: [["F", "#A259FF", "Figma — Wisp"], ["D", "#EA4C89", "Dribbble"], ["C", "#D97757", "Claude"],
+              ["", "#2A3546", "Lisbonne en 3 jours"], ["V", "#09B1BA", "Vinted"], ["a", "#FF9900", "Amazon"]],
+      groupes: ["Design", "Lisbonne", "Veille produit", "Achats"],
+      suggestion: ["Cardmarket", "Pokecardex"], sujet: "Pokémon TCG",
+      archives: [["Lisbonne", 4, 29, "#81c995"], ["Impôts 2026", 3, 27, "#fcad70"],
+                 ["Vélo électrique", 5, 25, "#78d9ec"], ["Recettes", 2, 23, "#ff8bcb"]]
+    }
+  },
+  en: {
+    avant: "Before", apres: "After",
+    s1: { t: "It groups your tabs <span class=accent>on its own</span>.",
+          s: "By site, or by search: two queries on the same topic form one group, named with your own words." },
+    s2: { t: "Sleep, wake or archive a <span class=accent>whole group</span>.",
+          s: "Every group shows its state and how long it has before it falls asleep. One click does the rest." },
+    s3: { t: "It learns your topics, <span class=accent>without sending anything</span>.",
+          s: "Two sites always show up together? Wisp offers to link them. You name it, you accept, or you decline." },
+    s4: { t: "Put a whole group away. Get it back <span class=accent>in one click</span>.",
+          s: "Archiving closes the whole group without losing a thing: it comes back with its name and colour, whenever you want." },
+    s5: { t: "Wisp doesn’t read your pages.",
+          s: "It sees the address and title of your tabs — what your tab strip already shows. Never their content.",
+          c: [["No look inside", "Wisp injects no script into the pages you visit."],
+              ["No outbound connection", "Everything is computed and stored on your machine. No server, ever."],
+              ["No account", "Nothing to create, nothing to connect. Install it, it works."]] },
+    tuile: { t: "Too many tabs open.", a: "None lost.", s: "It groups them by topic, on its own." },
+    banniere: { s: "It groups them by topic on its own, warns you before sleep, and contacts no server." },
+    donnees: {
+      avant: [["F", "#A259FF", "Figma — Wisp"], ["D", "#EA4C89", "Dribbble"], ["C", "#D97757", "Claude"],
+              ["", "#2A3546", "Lisbon in 3 days"], ["E", "#F1641E", "Etsy"], ["a", "#FF9900", "Amazon"]],
+      groupes: ["Design", "Lisbon", "Product research", "Shopping"],
+      suggestion: ["Cardmarket", "Pokecardex"], sujet: "Pokémon TCG",
+      archives: [["Lisbon", 4, 29, "#81c995"], ["Taxes 2026", 3, 27, "#fcad70"],
+                 ["E-bike", 5, 25, "#78d9ec"], ["Recipes", 2, 23, "#ff8bcb"]]
+    }
+  }
+};
+const A = ACCROCHES[LANGUE];
+const D = A.donnees;
+// Les pastilles « après » : les vrais titres que l'extension donne à ces groupes.
+const APRES = [["Design", "#EF98F4", "#2B0B2E"], [t("category_ai"), "#36DDF3", "#032630"],
+               [D.groupes[1], "#10F756", "#032F13"], [t("category_shopping"), "#FCAD70", "#33210E"]];
+
+// ---- Le popup, construit avec les classes et le CSS réels de popup.html ----
+function groupe(nom, couleur, etat, classe, action) {
+  return `<div class="group"><div class="dot" style="background:${couleur}"></div>
+    <div class="group-body"><div class="group-name">${esc(nom)}</div>
+    <div class="group-state ${classe}">${esc(etat)}</div></div>
+    <div class="actions"><button>${t(action)}</button><button class="ghost">${t("actionArchive")}</button></div></div>`;
+}
+function popup({ endormis = 0, archives = 0, vrac = 0, focus = false, suggestion = "", corps = "" }) {
+  const tri = vrac === 0 ? t("sortButtonNone")
+    : t(vrac === 1 ? "sortButtonOne" : "sortButtonMany", [String(vrac)]);
+  return `<div class="container">
+    <div class="header"><img src="${LOGO}"><h2>Wisp</h2></div>
+    <div class="stats-row">
+      <div class="stats-card"><span>${endormis}</span><label>${t("statSleepingTabs")}</label></div>
+      <div class="stats-card"><span>${archives}</span><label>${t("statArchivedGroups")}</label></div>
+    </div>
+    ${suggestion}
+    <button id="sweepBtn" ${vrac === 0 ? "disabled" : ""}>${tri}</button>
+    ${focus ? `<button id="focusBtn">${t("focusButton")}</button>` : ""}
+    ${corps}
+    <details class="settings"><summary>${t("settingsTitle")}</summary></details>
+    <div class="footer">${t("footer")}</div>
+  </div>`;
+}
+const regle = `<p class="section-title">${t("groupsTitle")}</p>
+  <p class="section-note">${t("ruleText", [t("delayHours", ["1"]), t("delayMinutes", ["30"])])}</p>`;
+
+function monterPopup(parent, options) {
+  const hote = document.createElement("div");
+  hote.className = "popup-hote";
+  hote.attachShadow({ mode: "open" }).innerHTML = `<style>${POPUP_CSS}</style>${popup(options)}`;
+  parent.append(hote);
+}
+
+// ---- Les scènes ----
+const logo = (h) => `<div class="logo">${["#EF98F4", "#36DDF3", "#10F756"]
+  .map(c => `<i style="width:${h * 1.9}px;height:${h * .5}px;background:${c}"></i>`).join("")}</div>`;
+const texte = (s, largeur) => `<div class="texte" style="width:${largeur}px"><h1>${s.t}</h1><p class="sous">${s.s}</p></div>`;
+// Deux rangées de trois onglets : six onglets en vrac se lisent d'un coup d'œil.
+const avantApres = (largeurOnglet = 132) => `
+  <div style="width:${largeurOnglet * 3 + 42}px">
+    <p class="etiquette" style="color:#8b95a9">${A.avant}</p>
+    <div class="bande" style="margin-bottom:26px">${D.avant.map(([l, c, n]) =>
+      `<div class="onglet" style="width:${largeurOnglet}px"><span class="fav" style="background:${c}">${l || "●"}</span><span>${esc(n)}</span></div>`).join("")}</div>
+    <p class="etiquette" style="color:#10F756">${A.apres}</p>
+    <div class="bande">${APRES.map(([n, fond, encre]) =>
+      `<span class="pastille" style="background:${fond};color:${encre}">${esc(n)}</span>`).join("")}</div>
+  </div>`;
+
+const SCENES = {
+  "1-regroupe": [1280, 800, (s) => { s.innerHTML = texte(A.s1, 420) + avantApres(170); }],
+  "2-groupes": [1280, 800, (s) => {
+    s.innerHTML = texte(A.s2, 560);
+    monterPopup(s, { endormis: 5, vrac: 3, focus: true, corps: `<div class="groups">${regle}
+      ${groupe(D.groupes[0], "#c58af9", t("stateActive", [onglets(3)]), "active", "actionSleep")}
+      ${groupe(D.groupes[1], "#81c995", "⏳ " + t("stateSleepsIn", [t("delayMinutes", ["14"])]), "waiting", "actionSleep")}
+      ${groupe(D.groupes[2], "#78d9ec", t("stateSleeping", [onglets(5)]), "sleeping", "actionWake")}
+      ${groupe(D.groupes[3], "#fcad70", t("stateSleepsIn", [t("delayMinutes", ["48"])]), "", "actionSleep")}</div>` });
+  }],
+  "3-suggestion": [1280, 800, (s) => {
+    s.innerHTML = texte(A.s3, 500);
+    const [a, b] = D.suggestion;
+    monterPopup(s, { vrac: 0, suggestion: `<div class="suggestion"><p>💡 <strong>${t("listLast", [a, b])}</strong> ${t("suggestionNamed")}</p>
+      <input type="text" value="${esc(D.sujet)}"><div class="suggestion-actions"><button>${t("suggestionLink")}</button>
+      <button class="ghost">${t("suggestionDismiss")}</button></div></div>`,
+      corps: `<div class="groups">${regle}${groupe(D.groupes[0], "#c58af9", t("stateActive", [onglets(3)]), "active", "actionSleep")}</div>` });
+  }],
+  "4-archives": [1280, 800, (s) => {
+    s.innerHTML = texte(A.s4, 560);
+    monterPopup(s, { archives: 4, vrac: 0, corps: `<div class="groups">${regle}
+      ${groupe(D.groupes[0], "#c58af9", t("stateActive", [onglets(2)]), "active", "actionSleep")}</div>
+      <div class="groups"><p class="section-title">${t("archivesTitle")}</p><p class="section-note">${t("archivesNote")}</p>
+      <input type="text" id="archiveSearch" placeholder="${esc(t("archiveSearchPlaceholder"))}">
+      ${D.archives.map(([n, k, j, c]) => `<div class="archive"><div class="dot" style="background:${c}"></div>
+        <div class="group-body"><div class="group-name">${esc(n)}</div><div class="group-state">${esc(t("archiveMeta", [onglets(k), dateCourte(j)]))}</div></div>
+        <div class="actions"><button>${t("actionRestore")}</button><button class="ghost">${t("actionForget")}</button></div></div>`).join("")}</div>` });
+  }],
+  "5-vie-privee": [1280, 800, (s) => {
+    s.innerHTML = texte(A.s5, 400) + `<div class="cartes">${A.s5.c.map(([b, p]) => `<div class="carte"><b>${b}</b><span>${p}</span></div>`).join("")}</div>`;
+  }],
+  "tuile-440x280": [440, 280, (s) => {
+    s.style.justifyContent = "flex-start";
+    s.innerHTML = `<div><div class="marque" style="font-size:44px;margin-bottom:18px">${logo(16)}Wisp</div>
+      <h1 style="font-size:23px;margin:0 0 14px;letter-spacing:-0.02em">${A.tuile.t}<br><span class="accent">${A.tuile.a}</span></h1>
+      <p class="sous" style="font-size:13px">${A.tuile.s}</p></div>`;
+  }],
+  "banniere-1400x560": [1400, 560, (s) => {
+    s.innerHTML = `<div class="texte" style="width:470px"><div class="marque" style="font-size:56px">${logo(19)}Wisp</div>
+      <h1 style="font-size:44px">${A.tuile.t}<br><span class="accent">${A.tuile.a}</span></h1>
+      <p class="sous" style="font-size:17px">${A.banniere.s}</p></div>` + avantApres(150);
+  }]
+};
+
+// Les marges suivent celles des visuels d'origine : texte à 76 px du bord.
+function monter(nom) {
+  const [l, h, dessiner] = SCENES[nom];
+  const s = document.getElementById("scene");
+  s.className = "cadre";
+  Object.assign(s.style, { width: l + "px", height: h + "px",
+    padding: nom.startsWith("tuile") ? "0 34px" : nom.startsWith("banniere") ? "0 66px" : "0 76px" });
+  dessiner(s);
+  document.documentElement.lang = LANGUE;
+  return document.fonts.ready.then(() => [l, h]);
+}
+// La scène se choisit par l'adresse (modele.html#2-groupes). Une fois les
+// polices chargées, <body data-pret> prévient le générateur qu'il peut
+// photographier : il n'a pas à connaître l'intérieur de la page.
+const demandee = decodeURIComponent(location.hash.slice(1));
+if (SCENES[demandee]) monter(demandee).then(() => { document.body.dataset.pret = "1"; });
+</script>
+</body>
+</html>
