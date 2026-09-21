@@ -4,7 +4,7 @@
     "version": "1.0.0",
     "description": "__MSG_extDescription__",
     "default_locale": "en",
-    "homepage_url": "https://wisptab.netlify.app",
+    "homepage_url": "https://wisptab.com",
     "icons": {
         "16": "icon16.png",
         "32": "icon32.png",

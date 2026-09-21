@@ -66,7 +66,7 @@ Coche **aucune** des cases de collecte de données, puis les trois attestations 
 - Je n'utilise pas les données à des fins étrangères à la fonction principale
 - Je n'utilise pas les données pour évaluer la solvabilité ou accorder des prêts
 
-URL de la politique de confidentialité : `https://wisptab.netlify.app/confidentialite.html`
+URL de la politique de confidentialité : `https://wisptab.com/confidentialite.html`
 
 ---
 
@@ -97,7 +97,7 @@ Le manifeste est lu automatiquement : nom, version et icônes se remplissent seu
 - **Permission justification** : un champ PAR permission, tous obligatoires. Textes plus haut.
 - **Are you using remote code?** → **No, I am not using remote code**
 - **Data usage** : ne coche AUCUNE case de collecte, puis coche les **trois attestations**
-- **Privacy policy URL** : `https://wisptab.netlify.app/confidentialite.html`
+- **Privacy policy URL** : `https://wisptab.com/confidentialite.html`
 
 ## 4. Onglet « Distribution »
 - **Visibility** : Public
@@ -131,5 +131,6 @@ Wisp regroupe automatiquement les onglets ouverts par sujet, en s'appuyant sur l
 - [x] Déployer `site/` sur Netlify → https://wisptab.netlify.app
 - [x] URL de confidentialité : https://wisptab.netlify.app/confidentialite.html
 - [ ] Ajouter `"homepage_url": "https://wisptab.netlify.app" (fait)` dans manifest.json
+- [ ] Domaine wisptab.com acheté (2026-09-21) : le brancher sur Netlify, puis mettre à jour l'URL du site et de la confidentialité dans le tableau de bord du Store (`homepage_url` du manifeste : fait, part avec la 1.1.0)
 - [ ] Remplacer `[TON EMAIL]` dans site/confidentialite.html
 - [ ] Remplacer les liens `#` de la landing par l'URL du Web Store, une fois publiée (cherche `data-todo`)

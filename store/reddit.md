@@ -3,7 +3,7 @@
 Deux versions, à copier-coller telles quelles. Reddit accepte le Markdown ci-dessous.
 
 - Extension : https://chromewebstore.google.com/detail/wisp/jmbidfccifncngjkhagpbilhfkmbaohm
-- Site : https://wisptab.netlify.app
+- Site : https://wisptab.com
 
 ---
 
@@ -36,7 +36,7 @@ The rest:
 **What it doesn't do:** no content script, no `<all_urls>`, no network calls — not even to me. No account. Five permissions, all visible before you install.
 
 Extension: https://chromewebstore.google.com/detail/wisp/jmbidfccifncngjkhagpbilhfkmbaohm
-Site, with an animated demo of the whole loop: https://wisptab.netlify.app
+Site, with an animated demo of the whole loop: https://wisptab.com
 
 **One heads-up before you click:** the extension's interface is **French only** right now. The site has an English toggle, the popup doesn't. If there's interest here I'll translate it — honestly, that's part of what I'm trying to find out.
 
@@ -79,7 +79,7 @@ Le reste :
 **Ce qu'il ne fait pas :** aucun script injecté dans les pages, pas de `<all_urls>`, aucun appel réseau — pas même vers moi. Aucun compte. Cinq autorisations, toutes visibles avant l'installation.
 
 L'extension : https://chromewebstore.google.com/detail/wisp/jmbidfccifncngjkhagpbilhfkmbaohm
-Le site, avec une démo animée de toute la boucle : https://wisptab.netlify.app
+Le site, avec une démo animée de toute la boucle : https://wisptab.com
 
 **Ce sur quoi j'aimerais vraiment des retours**
 
