@@ -13,7 +13,56 @@ Sur Reddit, passer l'éditeur en **Markdown mode** avant de coller, sinon les
 
 ---
 
-## Version anglaise — r/chrome_extensions, r/chrome, r/productivity
+## ★ Version décontractée — celle à poster sur les gros subs
+
+Sur les gros subs, les posts qui marchent ressemblent à quelqu'un qui partage
+son projet, pas à une fiche produit : court, sans gras ni intertitres, et une
+vraie question à la fin. Les versions détaillées plus bas servent à répondre
+aux commentaires.
+
+### Titre
+
+I kept losing my tabs so I made a little extension for it — what do you think?
+
+### Corps
+
+Hey all,
+
+I always have 40+ tabs open and could never find anything, so I ended up building a small Chrome extension for myself. It's called Wisp.
+
+Basically it groups your tabs by topic on its own. The part I like most: if you search "lisbon weekend" and later "what to do in lisbon", everything you opened from both searches ends up in the same "Lisbon" group. Groups you haven't touched in a while go to sleep, with a little ⏳ warning first so nothing disappears on you.
+
+There's also a button that tidies up whatever's lying around, and anything it can't place goes into an "Inbox" group.
+
+Nothing leaves your browser, no account, no tracking. The code's on GitHub if you want to poke around.
+
+It's free if you want to try it: https://chromewebstore.google.com/detail/wisp/jmbidfccifncngjkhagpbilhfkmbaohm
+There's a little demo on the site too: https://wisptab.com
+
+I'd genuinely love to hear what you think. Does it actually help? Does it group things weirdly? Anything that annoys you? Drop a comment, even if it's just "nah, not for me" 🙂
+
+### En français (même ton)
+
+**Titre :** Je perdais tout le temps mes onglets, alors j'ai fait une petite extension — vous en pensez quoi ?
+
+Salut à tous,
+
+J'ai toujours plus de 40 onglets ouverts et je ne retrouvais jamais rien, alors j'ai fini par me faire une petite extension Chrome. Elle s'appelle Wisp.
+
+En gros, elle range tes onglets par sujet toute seule. Ce que je préfère : si tu cherches « week-end lisbonne » puis plus tard « que faire à lisbonne », tout ce que tu as ouvert depuis les deux recherches se retrouve dans le même groupe « Lisbonne ». Les groupes auxquels tu n'as pas touché depuis un moment s'endorment, avec un petit ⏳ d'avertissement avant, pour que rien ne disparaisse sans prévenir.
+
+Il y a aussi un bouton qui range ce qui traîne, et tout ce qu'il ne sait pas où mettre part dans un groupe « À trier ».
+
+Rien ne sort de ton navigateur, pas de compte, pas de pistage. Le code est sur GitHub si tu veux fouiller.
+
+C'est gratuit si tu veux essayer : https://chromewebstore.google.com/detail/wisp/jmbidfccifncngjkhagpbilhfkmbaohm
+Il y a une petite démo sur le site : https://wisptab.com
+
+J'aimerais vraiment savoir ce que vous en pensez. Ça aide vraiment ? Ça regroupe des trucs bizarrement ? Quelque chose qui vous agace ? Laissez un commentaire, même si c'est juste « bof, pas pour moi » 🙂
+
+---
+
+## Version détaillée, anglaise — r/chrome_extensions, r/chrome, r/productivity
 
 ### Titres possibles
 
@@ -60,7 +109,7 @@ Solo dev here, so honest feedback genuinely shapes what I build next.
 
 ---
 
-## Version française — Le Journal du Hacker, r/developpeurs, réseaux
+## Version détaillée, française — Le Journal du Hacker, r/developpeurs, réseaux
 
 ### Titres possibles
 
